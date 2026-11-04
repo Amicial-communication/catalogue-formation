@@ -1,0 +1,1225 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Catalogue formation Amicial</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Catalogue de formation continue d'Amicial : recherche par public, thématique, format et durée, calendrier des sessions et demande d'inscription.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&family=Poppins:wght@500;600&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Mise en page : un guichet. D'abord « pour qui », puis « quelle thématique », enfin la fiche, la session et la demande.
+   Thème clair uniquement. Charte Amicial 2024 : Oregon blue, Atomic tangerine, Light blue ; titres Open Sans, sous-titres Poppins, texte PT Serif.
+   Code couleur : une couleur par thématique (onglet Listes de l'Excel), reprise sur filtres, bandeaux, cartes, sessions et fiches.
+   Motif : la « larme » des fiches papier, en pastille d'icône. */
+:root{
+  color-scheme:light;
+  --bg:#FFFFFF; --surface:#F3F7F9; --surface-2:#E7EEF2; --card:#FFFFFF; --line:#DCE5EA; --line-strong:#BFCFD7;
+  --fg:#1B2A38; --muted:#586A7A; --primary:#3E5A7F; --primary-ink:#FFFFFF; --primary-soft:#E3EAF3;
+  --accent:#F29559; --accent-ink:#8A3B0D; --accent-soft:#FDEBDF; --soft:#C7E0E4; --ok:#3F7A45; --ok-soft:#E5F1E6;
+  --warn-bg:#FFF4D6; --warn-fg:#6E5200; --danger:#B4483A;
+  --shadow:0 1px 2px rgb(27 42 56 / .05), 0 12px 28px -16px rgb(27 42 56 / .30);
+  --f-display:"Open Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-sub:"Poppins", "Segoe UI", system-ui, sans-serif;
+  --f-body:"PT Serif", Georgia, "Times New Roman", serif;
+  --r:14px; --r-sm:10px;
+}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+img{max-width:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 var(--f-display);-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+svg.i{width:1.15em;height:1.15em;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.eyebrow{font:600 12px/1.2 var(--f-sub);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0}
+
+/* Couleur de thématique : tout élément .dc porte --dc (couleur de base) et en dérive ses nuances */
+.dc{--dc-ink:color-mix(in srgb,var(--dc) 76%,#000);--dc-tint:color-mix(in srgb,var(--dc) 13%,#fff);--dc-tint-2:color-mix(in srgb,var(--dc) 18%,#fff);--dc-line:color-mix(in srgb,var(--dc) 34%,#fff)}
+
+/* ---------- En-tête */
+.top{border-bottom:1px solid var(--line);background:var(--bg)}
+.top-in{display:flex;align-items:center;gap:12px 18px;padding-block:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:inherit;min-width:0}
+.logo-plate{background:#FFFFFF;border-radius:10px;padding:6px 10px;display:flex;border:1px solid var(--line)}
+.logo-plate img{height:34px;width:auto;display:block}
+.brand-txt{display:flex;flex-direction:column;min-width:0}
+.brand-txt b{font:700 15px/1.2 var(--f-display)}
+.brand-txt small{color:var(--muted);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .spacer{flex:1}
+.views{display:inline-flex;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px}
+.views button{border:0;background:transparent;border-radius:999px;padding:7px 14px;font-weight:700;font-size:14px;color:var(--muted);display:inline-flex;align-items:center;gap:7px}
+.views button[aria-pressed="true"]{background:var(--primary);color:var(--primary-ink)}
+.views .k{font:600 11.5px var(--f-sub);background:rgb(255 255 255 / .22);border-radius:999px;padding:1px 7px}
+.views button[aria-pressed="false"] .k{background:var(--surface-2)}
+.sel-btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line-strong);background:var(--card);border-radius:999px;padding:8px 14px 8px 12px;font-weight:600;font-size:14px}
+.sel-btn:hover{border-color:var(--primary)}
+.sel-btn .count{min-width:22px;height:22px;border-radius:999px;background:var(--surface-2);display:inline-grid;place-items:center;font-size:12px;font-variant-numeric:tabular-nums;padding:0 6px}
+.sel-btn.has .count{background:var(--accent);color:#3B1606}
+.sel-btn.bump .count{animation:bump .4s ease}
+@keyframes bump{40%{transform:scale(1.35)}}
+
+/* ---------- Bandeaux */
+.banner{background:var(--warn-bg);color:var(--warn-fg);font-size:14px}
+.banner .wrap{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding-block:10px}
+.banner button{border:1px solid currentColor;background:transparent;border-radius:999px;padding:4px 12px;font-weight:600;font-size:13px}
+
+/* ---------- Héro */
+.hero{background:var(--surface);position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+.hero::after{content:"";position:absolute;width:520px;height:520px;right:-140px;top:-210px;border-radius:50% 0 50% 50%;background:var(--soft);opacity:.55;pointer-events:none}
+.hero-in{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:40px;padding-block:40px 36px;align-items:start}
+.hero h1{font:800 clamp(32px,4.6vw,52px)/1.04 var(--f-display);letter-spacing:-.02em;margin:10px 0 14px;text-wrap:balance;color:var(--primary)}
+.lead{font:400 17px/1.55 var(--f-body);color:var(--fg);max-width:52ch;margin:0 0 22px}
+.search{display:flex;align-items:center;gap:10px;background:var(--card);border:1.5px solid var(--line-strong);border-radius:16px;padding:0 14px;box-shadow:var(--shadow);max-width:560px}
+.search:focus-within{border-color:var(--primary)}
+.search svg{color:var(--muted);width:20px;height:20px}
+.search input{flex:1;min-width:0;border:0;background:transparent;padding:15px 0;font-size:16px;outline:none}
+.search input::placeholder{color:var(--muted)}
+.search kbd{font:600 12px var(--f-display);border:1px solid var(--line-strong);border-radius:6px;padding:1px 7px;color:var(--muted)}
+.stats{margin:16px 0 0;color:var(--muted);font-size:14px;display:flex;flex-wrap:wrap;gap:6px 16px}
+.stats b{color:var(--fg);font-variant-numeric:tabular-nums}
+.personas .eyebrow{margin-bottom:12px}
+.persona-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.persona{text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);padding:16px;display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:start;transition:border-color .15s, transform .15s, box-shadow .15s}
+.persona:hover{border-color:var(--line-strong);transform:translateY(-2px);box-shadow:var(--shadow)}
+.persona .drop{grid-row:span 3;background:var(--primary-soft);color:var(--primary)}
+.persona b{font:700 15.5px/1.25 var(--f-display)}
+.persona small{color:var(--muted);font-size:13px;line-height:1.35}
+.persona .n{font:600 12.5px var(--f-sub);color:var(--primary);margin-top:4px}
+.persona[aria-pressed="true"]{border-color:var(--primary);background:var(--primary-soft);box-shadow:inset 0 0 0 1px var(--primary)}
+.persona[aria-pressed="true"] .drop{background:var(--primary);color:#fff}
+
+/* Pastille « larme » */
+.drop{width:40px;height:40px;display:grid;place-items:center;border-radius:50% 4px 50% 50%;flex:none}
+.drop svg{width:21px;height:21px}
+.drop.solid{background:var(--dc);color:#fff}
+.drop.sm{width:32px;height:32px}
+.drop.sm svg{width:17px;height:17px}
+
+/* ---------- Filtres */
+.filters{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgb(255 255 255 / .94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.filters-in{display:flex;flex-direction:column;gap:10px;padding-block:12px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line-strong);background:var(--card);border-radius:999px;padding:6px 12px 6px 9px;font-size:13.5px;font-weight:600;white-space:nowrap;transition:background .15s, color .15s}
+.chip.dc{background:var(--dc-tint);border-color:var(--dc-line);color:var(--dc-ink)}
+.chip .dot{width:11px;height:11px;border-radius:50% 2px 50% 50%;background:var(--dc,var(--fg))}
+.chip .k{font-weight:500;opacity:.75;font-variant-numeric:tabular-nums}
+.chip:hover{border-color:var(--dc,var(--primary))}
+.chip[aria-pressed="true"]{background:var(--dc,var(--primary));border-color:var(--dc,var(--primary));color:#fff}
+.chip[aria-pressed="true"] .dot{background:#fff}
+.chip.zero{opacity:.45}
+.filter-row{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line-strong);border-radius:999px;padding:3px;background:var(--card);gap:2px}
+.seg button{border:0;background:transparent;border-radius:999px;padding:5px 12px;font-size:13.5px;font-weight:600;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--fg);color:#fff}
+.result-count{margin-left:auto;font-size:14px;color:var(--muted)}
+.result-count b{color:var(--fg);font-variant-numeric:tabular-nums}
+.link-btn{border:0;background:transparent;color:var(--primary);font-weight:600;font-size:14px;padding:4px 2px;text-decoration:underline;text-underline-offset:3px}
+
+/* ---------- Catalogue */
+main{padding-block:28px 56px;min-height:40vh}
+.group{margin-bottom:40px}
+.group-h{display:flex;align-items:center;gap:12px;margin:0 0 14px;background:var(--dc-tint);border:1px solid var(--dc-line);border-radius:var(--r);padding:10px 16px 10px 10px}
+.group-h h2{font:800 18px/1.25 var(--f-display);margin:0;text-wrap:balance;color:var(--dc-ink);flex:1}
+.group-h .k{font:600 12.5px var(--f-sub);color:var(--dc-ink);background:#fff;border-radius:999px;padding:3px 10px;border:1px solid var(--dc-line)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,290px),1fr));gap:14px}
+.card{position:relative;background:var(--card);border:1px solid var(--dc-line);border-radius:var(--r);display:flex;flex-direction:column;overflow:hidden;transition:border-color .15s, box-shadow .2s, transform .2s;animation:rise .38s both;animation-delay:calc(var(--i,0) * 18ms)}
+@keyframes rise{from{opacity:.25;transform:translateY(8px)}}
+.card:hover{border-color:var(--dc);box-shadow:var(--shadow);transform:translateY(-2px)}
+.card-head{display:flex;align-items:center;gap:10px;padding:10px 10px 10px 12px;background:var(--dc-tint)}
+.card-dom{font:600 11px/1.25 var(--f-sub);letter-spacing:.05em;text-transform:uppercase;color:var(--dc-ink);flex:1;min-width:0}
+.card-body{padding:14px 16px 14px;display:flex;flex-direction:column;gap:9px;flex:1}
+.heart{position:relative;z-index:2;border:0;background:transparent;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:var(--dc-ink)}
+.heart:hover{background:#fff;color:var(--accent-ink)}
+.heart svg{width:20px;height:20px}
+.heart[aria-pressed="true"]{color:#D9573A}
+.heart[aria-pressed="true"] svg{fill:currentColor}
+.card h3{margin:0;font:700 16.5px/1.3 var(--f-display);text-wrap:balance}
+.card h3 button{all:unset;cursor:pointer}
+.card h3 button::after{content:"";position:absolute;inset:0;border-radius:var(--r)}
+.card h3 button:focus-visible::after{outline:3px solid var(--accent);outline-offset:2px}
+mark{background:var(--accent-soft);color:inherit;border-radius:3px;padding:0 2px}
+.card-pub{margin:0;color:var(--muted);font-size:13.5px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:4px}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;border-radius:999px;padding:4px 10px;background:var(--surface);color:var(--fg);line-height:1.2}
+.pill svg{width:14px;height:14px}
+.pill.terr{background:var(--warn-bg);color:var(--warn-fg)}
+.pill.req{background:var(--primary-soft);color:var(--primary)}
+.pill.new{background:var(--accent);color:#3B1606}
+.pill.next{background:var(--ok-soft);color:var(--ok)}
+.pill.full{background:var(--accent-soft);color:var(--accent-ink)}
+.days{display:inline-flex;gap:3px}
+.days i{width:8px;height:8px;border-radius:2px;background:var(--dc,var(--primary))}
+.days i.h{background:linear-gradient(90deg,var(--dc,var(--primary)) 50%,var(--line-strong) 50%)}
+.empty{text-align:center;padding:60px 16px;border:1.5px dashed var(--line-strong);border-radius:var(--r);color:var(--muted)}
+.empty b{display:block;color:var(--fg);font-size:18px;margin-bottom:6px}
+
+/* ---------- Calendrier */
+.cal-top{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:22px}
+.cal-top .eyebrow{margin-right:6px}
+.month-chip{border:1px solid var(--line-strong);background:var(--card);border-radius:999px;padding:5px 12px;font-weight:600;font-size:13.5px;text-decoration:none;color:var(--fg)}
+.month-chip:hover{border-color:var(--primary)}
+.month-chip span{color:var(--muted);font-weight:500}
+.month{margin-bottom:34px;scroll-margin-top:170px}
+.month h2{font:800 22px/1.2 var(--f-display);margin:0 0 12px;color:var(--primary);text-transform:capitalize}
+.sess-list{display:flex;flex-direction:column;gap:10px}
+.sess{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:16px;align-items:center;background:var(--card);border:1px solid var(--dc-line);border-radius:var(--r);padding:10px 14px 10px 10px;transition:border-color .15s, box-shadow .2s}
+.sess:hover{border-color:var(--dc);box-shadow:var(--shadow)}
+.sess-date{width:64px;border-radius:12px 4px 12px 12px;background:var(--dc);color:#fff;text-align:center;padding:8px 4px;display:flex;flex-direction:column;line-height:1.1}
+.sess-date small{font:600 11px var(--f-sub);text-transform:uppercase;letter-spacing:.06em;opacity:.9}
+.sess-date b{font:800 26px/1 var(--f-display);margin:3px 0 2px;font-variant-numeric:tabular-nums}
+.sess-date span{font:600 12px var(--f-sub)}
+.sess-dom{font:600 11px/1.25 var(--f-sub);letter-spacing:.05em;text-transform:uppercase;color:var(--dc-ink)}
+.sess-main button{all:unset;cursor:pointer;font:700 16px/1.3 var(--f-display);display:block;margin:3px 0 5px}
+.sess-main button:hover{text-decoration:underline}
+.sess-main button:focus-visible{outline:3px solid var(--accent);border-radius:4px}
+.sess-meta{display:flex;flex-wrap:wrap;gap:4px 14px;color:var(--muted);font-size:13.5px}
+.sess-meta span{display:inline-flex;gap:5px;align-items:center}
+.sess-side{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.cal-note{margin-top:8px;color:var(--muted);font-size:14px}
+
+/* ---------- Pied */
+.foot{background:var(--surface);border-top:1px solid var(--line)}
+.foot-in{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:32px;padding-block:32px 40px}
+.howto h2{font:700 18px var(--f-display);margin:0 0 8px}
+.howto p{font:400 15.5px/1.6 var(--f-body);margin:0 0 10px;max-width:62ch}
+.contact{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:14px}
+.copy-btn{border:1px solid var(--line-strong);background:var(--card);border-radius:999px;padding:3px 10px;font-size:12.5px;font-weight:600}
+.foot-side{display:flex;flex-direction:column;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line-strong);background:var(--card);border-radius:999px;padding:9px 16px;font-weight:600;font-size:14px;text-decoration:none;color:var(--fg);line-height:1.2}
+.btn:hover{border-color:var(--primary)}
+.btn.primary{background:var(--primary);color:var(--primary-ink);border-color:var(--primary)}
+.btn.primary:hover{filter:brightness(1.1)}
+.btn.sm{padding:6px 12px;font-size:13px}
+.btn.ghost{background:transparent}
+.btn.danger{color:var(--danger);border-color:color-mix(in srgb,var(--danger) 45%,var(--line))}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* ---------- Panneaux */
+dialog{border:0;padding:0;color:var(--fg);background:var(--card);max-height:100dvh}
+dialog::backdrop{background:rgb(15 23 32 / .45);backdrop-filter:blur(2px)}
+dialog.sheet{margin:0 0 0 auto;height:100dvh;width:min(700px,100vw);max-width:100vw;border-left:1px solid var(--line);box-shadow:-20px 0 60px -30px rgb(0 0 0 / .5)}
+dialog.sheet.wide{width:min(780px,100vw)}
+dialog.sheet[open]{animation:slide .28s cubic-bezier(.2,.8,.2,1)}
+@keyframes slide{from{transform:translateX(40px);opacity:.4}}
+dialog.modal{width:min(720px,calc(100vw - 32px));border-radius:18px;max-height:calc(100dvh - 32px)}
+.sheet-in{display:flex;flex-direction:column;height:100%}
+.sheet-head{position:relative;padding:20px 24px;padding-top:calc(20px + env(safe-area-inset-top,0px));background:var(--dc-tint,var(--surface));border-bottom:1px solid var(--line)}
+.sheet-head.dc{border-bottom-color:var(--dc-line)}
+.sheet-head .row{display:flex;align-items:center;gap:10px;padding-right:44px}
+.sheet-head .dom{font:600 12px/1.3 var(--f-sub);letter-spacing:.05em;text-transform:uppercase;color:var(--dc-ink,var(--muted))}
+.sheet-head h2{font:800 clamp(22px,3vw,28px)/1.18 var(--f-display);margin:12px 0 0;text-wrap:balance;letter-spacing:-.01em}
+.sheet-head .id{font:600 12px var(--f-sub);color:var(--muted);margin-top:8px}
+.x{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:max(14px,env(safe-area-inset-right,0px));width:40px;height:40px;border-radius:50%;border:1px solid var(--line-strong);background:var(--card);display:grid;place-items:center}
+.x svg{width:18px;height:18px}
+.sheet-body{flex:1;overflow:auto;padding:22px max(24px,env(safe-area-inset-right,0px)) 28px 24px}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin:0}
+.facts div{background:var(--card);padding:12px 14px;min-width:0}
+.facts dt{font:600 11.5px var(--f-sub);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.facts dd{margin:0;font-size:14.5px;line-height:1.45;overflow-wrap:anywhere}
+.facts dd small{display:block;color:var(--muted);font-size:13px}
+.facts .wide{grid-column:1/-1}
+.parcours{margin-top:16px;border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;display:flex;flex-direction:column;gap:8px;background:var(--surface)}
+.parcours .eyebrow{font-size:11px}
+.parcours button{all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;font-weight:600;font-size:14.5px;color:var(--primary)}
+.parcours button:hover span{text-decoration:underline}
+.parcours button:focus-visible{outline:3px solid var(--accent);border-radius:6px}
+.parcours .tag{font:600 11.5px var(--f-sub);color:var(--muted);min-width:64px}
+.sec{margin-top:26px}
+.sec h3{font:700 16px var(--f-display);margin:0 0 12px;display:flex;align-items:center;gap:8px}
+.fsess{margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.fsess li{list-style:none;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;border:1px solid var(--dc-line);border-radius:var(--r-sm);padding:8px 10px}
+.mini-date{background:var(--dc);color:#fff;border-radius:9px 3px 9px 9px;text-align:center;width:50px;padding:5px 2px;line-height:1.05}
+.mini-date b{display:block;font:800 18px var(--f-display)}
+.mini-date span{font:600 10.5px var(--f-sub);text-transform:uppercase}
+.fsess .t{font-weight:700;font-size:14px}
+.fsess small{display:block;color:var(--muted);font-size:12.5px}
+.nosess{background:var(--surface);border-radius:var(--r-sm);padding:12px 14px;font-size:14px;color:var(--muted);margin:0}
+.objs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.objs li{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;font:400 15.5px/1.55 var(--f-body)}
+.objs .o{font:700 12px/1 var(--f-sub);color:#fff;background:var(--dc,var(--primary));border-radius:6px;padding:6px 7px;margin-top:1px;font-variant-numeric:tabular-nums}
+.prog{margin:0;padding:0;list-style:none;counter-reset:p;display:flex;flex-direction:column;gap:12px}
+.prog>li{font:700 15px/1.45 var(--f-display);padding-left:30px;position:relative}
+.prog>li::before{counter-increment:p;content:counter(p);position:absolute;left:0;top:0;width:21px;height:21px;border-radius:50% 3px 50% 50%;background:var(--dc-tint-2,var(--primary-soft));color:var(--dc-ink,var(--primary));font:700 11.5px/21px var(--f-sub);text-align:center}
+.prog ul{margin:6px 0 0;padding-left:16px;display:flex;flex-direction:column;gap:3px}
+.prog ul li{font:400 14.5px/1.5 var(--f-body);color:var(--fg)}
+.prog ul li::marker{color:var(--muted)}
+.sheet-actions{display:flex;flex-wrap:wrap;gap:10px;padding:14px 24px;padding-bottom:calc(14px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);background:var(--card)}
+.sheet-actions .btn[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)}
+.sheet-actions .btn[aria-pressed="true"] svg{fill:currentColor}
+
+.sel-list{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.sel-list li{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;border:1px solid var(--dc-line);border-radius:var(--r-sm);padding:10px 10px 10px 12px}
+.sel-list .t{all:unset;cursor:pointer;font-weight:700;font-size:14.5px;line-height:1.3}
+.sel-list .t:hover{text-decoration:underline}
+.sel-list small{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}
+.rm{border:0;background:transparent;width:34px;height:34px;border-radius:50%;color:var(--muted);display:grid;place-items:center;flex:none}
+.rm:hover{background:var(--surface);color:var(--fg)}
+.note{font-size:13px;color:var(--muted)}
+.how{background:var(--surface);border-radius:var(--r-sm);padding:12px 14px;font-size:14px;margin-top:14px}
+.how ol{margin:6px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:3px}
+
+/* ---------- Formulaire d'inscription */
+.form-sec{margin-bottom:26px}
+.form-sec>h3{font:700 16px var(--f-display);margin:0 0 12px;display:flex;align-items:center;gap:8px}
+.form-sec>h3 .num{width:24px;height:24px;border-radius:50% 3px 50% 50%;background:var(--primary);color:#fff;display:grid;place-items:center;font:700 12px var(--f-sub)}
+.ins-f{border:1px solid var(--dc-line);border-radius:var(--r-sm);padding:12px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:6px 12px;align-items:start;background:var(--dc-tint);margin-bottom:8px}
+.ins-f .t{font-weight:700;font-size:14.5px;line-height:1.3;padding-top:5px}
+.ins-f .t small{display:block;font-weight:400;color:var(--muted);font-size:12.5px}
+.ins-f .field{grid-column:2/4}
+.person{border:1px solid var(--line);border-radius:var(--r-sm);padding:14px;margin-bottom:10px}
+.person-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;min-height:34px}
+.person-h b{font:600 13px var(--f-sub);letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 14px}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.field.long{grid-column:1/-1}
+.field label{font-weight:600;font-size:13.5px}
+.field label .req{color:var(--danger);margin-left:2px}
+.field input,.field select,.field textarea{border:1.5px solid var(--line-strong);border-radius:9px;background:#fff;padding:9px 11px;font-size:15px;width:100%;min-width:0}
+.field textarea{resize:vertical;min-height:76px}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
+.field .help{font-size:12.5px;color:var(--muted)}
+.field.err input,.field.err select,.field.err textarea{border-color:var(--danger)}
+.field .msg{font-size:12.5px;color:var(--danger);font-weight:600}
+.rgpd{font-size:13px;color:var(--muted);border-left:3px solid var(--line-strong);padding-left:12px;margin:0}
+.form-err{background:#FBE9E6;color:#8C2F23;border-radius:var(--r-sm);padding:10px 14px;font-size:14px;font-weight:600;margin-bottom:16px}
+.okmark{width:48px;height:48px;border-radius:50% 5px 50% 50%;background:var(--ok);color:#fff;display:grid;place-items:center;margin-bottom:12px}
+.okmark svg{width:26px;height:26px}
+.ready h3{font:800 22px var(--f-display);margin:0 0 6px}
+.mail-prev{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);padding:14px;font:400 13px/1.5 ui-monospace,"Cascadia Mono",Consolas,monospace;white-space:pre-wrap;max-height:320px;overflow:auto;margin:14px 0}
+.to-line{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:14px;margin-top:12px}
+.to-line code{background:var(--surface-2);border-radius:6px;padding:3px 8px;user-select:all}
+
+.modal-in{padding:24px;position:relative}
+.modal-in h2{font:800 22px var(--f-display);margin:0 0 6px;padding-right:44px}
+.modal-in .x{top:14px;right:14px}
+.modal-in a{color:var(--primary);font-weight:600}
+.steps{list-style:none;margin:16px 0;padding:0;display:grid;gap:10px}
+.steps li{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;font-size:14.5px}
+.steps .n{width:28px;height:28px;border-radius:50% 4px 50% 50%;background:var(--primary);color:var(--primary-ink);display:grid;place-items:center;font:700 13px var(--f-sub)}
+.drop-zone{display:block;border:2px dashed var(--line-strong);border-radius:var(--r);padding:26px 16px;text-align:center;background:var(--surface);transition:border-color .15s, background .15s;cursor:pointer}
+.drop-zone.over{border-color:var(--primary);background:var(--primary-soft)}
+.drop-zone b{display:block;font-size:15px;margin-bottom:4px}
+.drop-zone input{position:absolute;opacity:0;width:1px;height:1px}
+.report{margin-top:16px;display:flex;flex-direction:column;gap:10px}
+.report .ok{display:flex;flex-wrap:wrap;gap:6px}
+.report ul{margin:0;padding-left:18px;font-size:14px;display:flex;flex-direction:column;gap:4px;max-height:220px;overflow:auto}
+.report .warn{background:var(--warn-bg);color:var(--warn-fg);border-radius:var(--r-sm);padding:12px 14px}
+.report .warn b{display:block;margin-bottom:6px}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--fg);color:#fff;padding:10px 16px;border-radius:999px;font-weight:600;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s, transform .2s;z-index:100;max-width:calc(100vw - 32px)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+#print-root{display:none}
+
+@media (max-width: 900px){
+  .hero-in{grid-template-columns:1fr;gap:28px;padding-block:28px 26px}
+  .foot-in{grid-template-columns:1fr}
+}
+@media (max-width: 700px){
+  .filters{position:static;background:var(--bg)}
+  .views{order:5;width:100%}
+  .views button{flex:1;justify-content:center}
+  .brand-txt{display:none}
+  .sel-btn .lbl{display:none}
+  .chips{flex-wrap:nowrap;overflow-x:auto;margin-inline:-16px;padding-inline:16px;scrollbar-width:none;padding-bottom:2px}
+  .chips::-webkit-scrollbar{display:none}
+  .persona-grid{gap:8px}
+  .persona{padding:12px;grid-template-columns:1fr}
+  .persona .drop{grid-row:auto;width:34px;height:34px;margin-bottom:6px}
+  .persona small{display:none}
+  .result-count{margin-left:0;width:100%}
+  .filter-row .seg{width:100%}
+  .filter-row .seg button{flex:1;white-space:nowrap;padding:6px 6px;font-size:12.5px}
+  .facts,.fields{grid-template-columns:1fr}
+  dialog.sheet,dialog.sheet.wide{width:100vw;border-left:0}
+  .search kbd{display:none}
+  .sess{grid-template-columns:auto minmax(0,1fr);gap:12px}
+  .sess-side{grid-column:1/-1;flex-direction:row;justify-content:space-between;align-items:center}
+  .month{scroll-margin-top:16px}
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+
+/* ---------- Impression */
+@media print{
+  @page{size:A4;margin:14mm 14mm 16mm}
+  body{background:#fff;color:#1B2A38;font-size:10.5pt}
+  body::before{display:none}
+  body>*:not(#print-root){display:none!important}
+  #print-root{display:block}
+  #print-root *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .p-cover{height:250mm;display:flex;flex-direction:column;justify-content:space-between;break-after:page}
+  .p-cover img{height:22mm;width:auto}
+  .p-cover h1{font:800 34pt/1.05 var(--f-display);color:#3E5A7F;margin:0 0 6mm}
+  .p-cover p{font:400 12pt/1.5 var(--f-body);max-width:140mm}
+  .p-toc{break-after:page}
+  .p-toc h2{font:800 18pt var(--f-display);color:#3E5A7F;margin:0 0 6mm}
+  .p-toc h3{font:700 11pt var(--f-display);margin:5mm 0 2mm;display:flex;gap:3mm;align-items:center}
+  .p-toc h3 i{width:3.6mm;height:3.6mm;border-radius:50% 1px 50% 50%;display:inline-block}
+  .p-toc ol{margin:0;padding:0;list-style:none}
+  .p-toc li{display:flex;gap:3mm;font-size:10pt;padding:.6mm 0;border-bottom:.2mm dotted #B9CCD4}
+  .p-toc li span{color:#566878;min-width:9mm}
+  .p-fiche{break-after:page}
+  .p-fiche:last-child{break-after:auto}
+  .p-head{border-radius:4mm;padding:5mm 6mm;margin-bottom:5mm}
+  .p-head .dom{font:600 8.5pt var(--f-sub);letter-spacing:.06em;text-transform:uppercase}
+  .p-head h2{font:800 17pt/1.2 var(--f-display);margin:2mm 0 0}
+  .p-head .id{font:600 8.5pt var(--f-sub);color:#566878;margin-top:1.5mm}
+  .p-facts{display:grid;grid-template-columns:1fr 1fr;gap:2mm 6mm;margin:0 0 5mm;font-size:9.5pt}
+  .p-facts dt{font:600 7.5pt var(--f-sub);letter-spacing:.06em;text-transform:uppercase;color:#566878}
+  .p-facts dd{margin:0 0 1mm}
+  .p-fiche h3{font:700 11pt var(--f-display);margin:5mm 0 2mm;break-after:avoid}
+  .p-fiche ol, .p-fiche ul{margin:0;padding-left:5mm;font:400 10pt/1.45 var(--f-body)}
+  .p-fiche .prog-p>li{font:700 10pt/1.4 var(--f-display);margin-top:1.5mm;break-inside:avoid}
+  .p-fiche .prog-p ul li{font:400 9.5pt/1.4 var(--f-body)}
+  .p-foot{margin-top:6mm;font-size:8pt;color:#566878;border-top:.2mm solid #D5E2E7;padding-top:2mm}
+  .p-sel h1{font:800 20pt var(--f-display);color:#3E5A7F;margin:0 0 4mm}
+  .p-sel table{width:100%;border-collapse:collapse;font-size:10pt}
+  .p-sel td,.p-sel th{border-bottom:.2mm solid #D5E2E7;padding:2.5mm 2mm;text-align:left;vertical-align:top}
+  .p-sel th{font:600 8pt var(--f-sub);letter-spacing:.06em;text-transform:uppercase;color:#566878}
+  .p-sel .box{width:5mm;height:5mm;border:.3mm solid #566878;border-radius:1mm;display:inline-block}
+}
+</style>
+<style>html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+</head>
+<body>
+
+
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="#" id="homeLink">
+      <span class="logo-plate"><img src="logo.png" alt="Amicial" width="120" height="34"></span>
+      <span class="brand-txt"><b id="brandTitle">Catalogue de formation</b><small id="brandVersion"></small></span>
+    </a>
+    <span class="spacer"></span>
+    <nav class="views" aria-label="Affichage">
+      <button type="button" data-view="cat" aria-pressed="true"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Catalogue</button>
+      <button type="button" data-view="cal" aria-pressed="false" id="calTab"><svg class="i" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>Calendrier <span class="k" id="calCount">0</span></button>
+    </nav>
+    <button class="sel-btn" id="selBtn" type="button" aria-haspopup="dialog">
+      <svg class="i" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z"/></svg>
+      <span class="lbl">Ma sélection</span><span class="count" id="selCount">0</span>
+    </button>
+  </div>
+</header>
+
+<div class="banner" id="previewBanner" hidden>
+  <div class="wrap"><span id="previewText"></span><button type="button" id="previewExit">Revenir à la version en ligne</button></div>
+</div>
+
+<section class="hero">
+  <div class="wrap hero-in">
+    <div class="hero-txt">
+      <p class="eyebrow" id="heroEyebrow">Formation continue · Amicial</p>
+      <h1 id="heroTitle">Catalogue de formation</h1>
+      <p class="lead" id="heroLead"></p>
+      <label class="sr-only" for="q">Rechercher une formation</label>
+      <div class="search">
+        <svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg>
+        <input id="q" type="search" autocomplete="off" placeholder="Rechercher : toilette, Alzheimer, TMS, management…">
+        <kbd aria-hidden="true">/</kbd>
+      </div>
+      <p class="stats" id="stats"></p>
+    </div>
+    <div class="personas">
+      <p class="eyebrow" id="personaLabel">Pour quel public ?</p>
+      <div class="persona-grid" id="personaGrid" role="group" aria-labelledby="personaLabel"></div>
+    </div>
+  </div>
+</section>
+
+<div class="filters">
+  <div class="wrap filters-in">
+    <div class="chips" id="domChips" role="group" aria-label="Thématiques"></div>
+    <div class="filter-row">
+      <div class="seg" role="group" aria-label="Format" id="fmtSeg">
+        <button type="button" data-v="" aria-pressed="true">Tous formats</button>
+        <button type="button" data-v="p" aria-pressed="false">Présentiel</button>
+        <button type="button" data-v="d" aria-pressed="false">À distance</button>
+      </div>
+      <div class="seg" role="group" aria-label="Durée" id="durSeg">
+        <button type="button" data-v="" aria-pressed="true">Toutes durées</button>
+        <button type="button" data-v="1" aria-pressed="false">1 jour max.</button>
+        <button type="button" data-v="2" aria-pressed="false">2 jours</button>
+        <button type="button" data-v="3" aria-pressed="false">3 jours et +</button>
+      </div>
+      <span class="result-count" id="resultCount" aria-live="polite"></span>
+      <button type="button" class="link-btn" id="resetBtn" hidden>Effacer les filtres</button>
+    </div>
+  </div>
+</div>
+
+<div class="banner" id="demoBanner" hidden>
+  <div class="wrap"><b>Dates fictives.</b> Le calendrier affiche des sessions de démonstration en attendant le calendrier réel du service formation.</div>
+</div>
+
+<main class="wrap" id="results" aria-live="polite"></main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <div class="howto">
+      <h2>Comment s'inscrire ?</h2>
+      <p id="howtoText"></p>
+      <div class="contact" id="contactBox"></div>
+    </div>
+    <div class="foot-side">
+      <span id="footVersion"></span>
+      <span id="footSource"></span>
+      <button type="button" class="btn" id="printAllBtn" data-standalone>
+        <svg class="i" viewBox="0 0 24 24"><path d="M7 9V3h10v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/></svg>
+        Imprimer le catalogue (PDF)
+      </button>
+      <button type="button" class="btn ghost" id="adminBtn">
+        <svg class="i" viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg>
+        Mettre à jour le catalogue
+      </button>
+    </div>
+  </div>
+</footer>
+
+<dialog class="sheet" id="ficheDlg" aria-labelledby="ficheTitle"><div class="sheet-in" id="ficheIn"></div></dialog>
+
+<dialog class="sheet" id="selDlg" aria-labelledby="selTitle">
+  <div class="sheet-in">
+    <div class="sheet-head">
+      <div class="row"><span class="drop sm" style="background:var(--accent-soft);color:var(--accent-ink)"><svg class="i" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z"/></svg></span><span class="dom">Formations repérées</span></div>
+      <h2 id="selTitle">Ma sélection</h2>
+      <button class="x" type="button" data-close aria-label="Fermer"><svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <div class="sheet-body">
+      <p style="font:400 15px/1.55 var(--f-body);margin:0">Le cœur sert à mettre de côté des formations, par exemple pendant un entretien professionnel. Ensuite, une seule demande d'inscription suffit pour toutes.</p>
+      <ul class="sel-list" id="selList"></ul>
+      <p class="note" id="selEmpty">Aucune formation pour l'instant. Touchez le cœur sur une carte pour l'ajouter.</p>
+      <div class="how"><b>Ce qui se passe ensuite</b>
+        <ol><li>« Demander l'inscription » ouvre un formulaire pré-rempli avec ces formations.</li>
+        <li>Vous choisissez les sessions et indiquez le ou les salariés concernés.</li>
+        <li>La demande part par e-mail au service RH, depuis votre messagerie.</li></ol>
+        <p class="note" style="margin:8px 0 0">La sélection reste sur cet appareil : rien n'est envoyé tant que vous ne faites pas de demande.</p>
+      </div>
+    </div>
+    <div class="sheet-actions">
+      <button type="button" class="btn primary" id="selAsk">Demander l'inscription</button>
+      <button type="button" class="btn" id="selCopy"><svg class="i" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg>Copier la liste</button>
+      <button type="button" class="btn" id="selPrint" data-standalone><svg class="i" viewBox="0 0 24 24"><path d="M7 9V3h10v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/></svg>Imprimer</button>
+      <button type="button" class="btn danger" id="selClear">Vider</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog class="sheet wide" id="insDlg" aria-labelledby="insTitle">
+  <div class="sheet-in">
+    <div class="sheet-head">
+      <div class="row"><span class="drop sm" style="background:var(--primary);color:#fff"><svg class="i" viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/></svg></span><span class="dom">Envoyée au service RH par e-mail</span></div>
+      <h2 id="insTitle">Demande d'inscription</h2>
+      <button class="x" type="button" data-close aria-label="Fermer"><svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <form class="sheet-body" id="insForm" novalidate></form>
+    <div class="sheet-actions" id="insActions"></div>
+  </div>
+</dialog>
+
+<dialog class="modal" id="adminDlg" aria-labelledby="adminTitle">
+  <div class="modal-in">
+    <h2 id="adminTitle">Mettre à jour le catalogue</h2>
+    <p style="margin:0;color:var(--muted)">Formations, sessions et formulaire d'inscription viennent d'un seul fichier Excel, <b style="color:var(--fg)">catalogue.xlsx</b>. Pas de code à toucher.</p>
+    <button class="x" type="button" data-close aria-label="Fermer"><svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    <ol class="steps">
+      <li><span class="n">1</span><span><b>Modifier</b> l'Excel : onglet « Formations » pour le contenu, « Sessions » pour le calendrier, « Inscription » pour les champs du formulaire.</span></li>
+      <li><span class="n">2</span><span><b>Tester</b> en déposant le fichier ci-dessous. L'aperçu s'affiche sur cette page et signale les oublis. Rien n'est publié.</span></li>
+      <li><span class="n">3</span><span><b>Publier</b> en remplaçant catalogue.xlsx sur l'hébergement du site. Le catalogue est à jour en une minute.</span></li>
+    </ol>
+    <label class="drop-zone" id="dropZone" for="fileIn">
+      <input type="file" id="fileIn" accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+      <b>Déposer un fichier Excel ici</b>
+      <span class="note">ou cliquer pour le choisir · .xlsx</span>
+    </label>
+    <div class="report" id="report" hidden></div>
+    <p class="note" style="margin-top:14px" data-standalone><a href="catalogue.xlsx" download>Télécharger le fichier actuellement en ligne</a></p>
+  </div>
+</dialog>
+
+<div id="print-root"></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+/* Données de secours : utilisées seulement si catalogue.xlsx est introuvable. La vraie source, c'est le fichier Excel. */
+const SECOURS = {"items":[{"id":"F01","titre":"Aide à la prise des repas","statut":"Publié","publics":"Intervenant à domicile","publicDetail":"Intervenante à domicile","domaine":"Techniques d'intervention à domicile","format":"Présentiel","precision":"","territoire":"","duree":"14 h (2 jours)","prerequis":"Être en poste en tant qu’intervenante à domicile","requis":"","organismes":"","objectifs":"Connaître les aspects physio-anatomiques de la déglutition, les causes et les conséquences de la dysphagie\nSavoir préparer les menus et choisir les aliments en fonction des pathologies\nAcquérir les attitudes et comportements entraînant personnalisation, respect et convivialité des techniques d'aide au repas afin d'éviter les fausses routes et ainsi assurer la sécurité du patient pendant les repas\nApporter plus de confort au patient durant le temps du repas et plus d'aisance dans l'accompagnement","programme":"Les troubles de la déglutition\nLes différents groupes alimentaires\nAide à la prise des repas","motscles":"alimentation, fausse route, déglutition","nouveau":"Non","row":2},{"id":"F02","titre":"Aide à la toilette","statut":"Publié","publics":"Intervenant à domicile","publicDetail":"Intervenante à domicile ; AVS ; AES","domaine":"Techniques d'intervention à domicile","format":"Présentiel","precision":"","territoire":"","duree":"7 à 14 h (1 à 2 jours)","prerequis":"Être en poste en tant qu'intervenante à domicile, AES, AVS","requis":"","organismes":"AUTONOMII ; ABC Formation ; Les Chênes ; ASTER Formation ; IRTS","objectifs":"Etablir une relation professionnelle de confiance avec la personne aidée\nContribuer à l'autonomie physique par l'observation de la personne aidée et l'environnement\nAccompagner la personne dans la réalisation de ses soins personnels dans le respect des bonnes pratiques\nMettre en œuvre les techniques et gestes professionnels permettant de préserver sa santé","programme":"Etablir une relation professionnelle de confiance avec la personne aidée\n- langage verbal et non verbal\n- communication bienveillante\n- notions intimité, liens entre le corps et l'intimité\n- posture face aux refus de toilette\nContribuer à l'autonomie physique par l'observation de la personne aidée et l'environnement\n- influence des pathologies sur conscience corporelle, ressenti et sensations corporelles\n- influence de l'environnement physique sur indépendance de la personne aidée\n- influence du vieillissement ou pathologie sur les perceptions de la personne\nAccompagner la personne dans la réalisation de ses soins personnels dans le respect des bonnes pratiques\n- Mettre en œuvre les techniques et gestes professionnels permettant de préserver sa santé","motscles":"","nouveau":"Non","row":3},{"id":"F03","titre":"Atelier cuisine","statut":"Publié","publics":"Intervenant à domicile","publicDetail":"Intervenante à domicile","domaine":"Techniques d'intervention à domicile","format":"Présentiel","precision":"","territoire":"Bouches-du-Rhône (13)","duree":"14 h (2 jours)","prerequis":"Être en poste en tant qu'intervenante à domicile","requis":"","organismes":"","objectifs":"Connaitre les techniques culinaires de base pour élaborer des plats lors des interventions à domicile en tenant compte du goût des personnes aidées, de leur budget et de leurs besoins alimentaires spécifiques.","programme":"Les fondamentaux et principes de base :\n- Les principes de sécurité en lien avec les appareils et les énergies\n- Les techniques de base : cuisson à l'eau, utilisation de l'autocuiseur\nTechniques culinaires :\n- Pâtes liquides salées et sucrées : beignets, crêpes\n- Les roux qui permettent de cuisiner toutes sortes de sauces (béchamel, daube, etc…)\n- La pâte brisée : quiches salées et tartes sucrées\n- Les crèmes salées et sucrées","motscles":"","nouveau":"Non","row":4},{"id":"F04","titre":"Baluchonneurs","statut":"Publié","publics":"Intervenant à domicile ; Personnel soignant","publicDetail":"Intervenante à domicile ; AVS","domaine":"Techniques d'intervention à domicile","format":"Présentiel","precision":"","territoire":"","duree":"21 h (3 jours)","prerequis":"Être en poste en tant qu'intervenante à domicile, AS, AVS","requis":"","organismes":"","objectifs":"Comprendre et restituer la philosophie du Baluchonnage\nComprendre le vécu des aidants et ajuster sa position\nProposer des stratégies face aux difficultés exprimées par les aidants\nIntervenir avec la juste proximité auprès du public\nFaire face aux situations complexes\nPrendre des décisions en regard de dilemmes éthiques\nComprendre les enjeux du journal d’accompagnement\nÊtre en mesure de rédiger le journal d’accompagnement","programme":"SAVOIRS\n- Philosophie du Baluchonnage : 1h30\n- Baluchon France et le contexte français de mise en œuvre : 1h\n- Processus du Baluchonnage : 1h30\n- Savoir : définitions et psychologie de l’aidant : 1h30\nSAVOIR FAIRE\n- Les différents savoir-faire : 1h30\n- Faire face aux situations de crise : 1h\n- Comprendre et utiliser les outils du Baluchonnage : 2h\nSAVOIR ETRE – ATTITUDES\n- Savoir-être : 1h\n- Savoir communiquer : 1h\n- Mises en situations : 3h\nLE JOURNAL D’ACCOMPAGNEMENT\n- Compréhension des enjeux : 1h\n- Rédaction du contenu : 1h\n- Utilisation de l’Extranet : 1h\nÉchanges entre participants et exemples concrets : 2h\nÉvaluation : 1h","motscles":"répit, aidants","nouveau":"Non","row":5},{"id":"F05","titre":"Communication, gestion des conflits et organisation collective","statut":"Publié","publics":"Intervenant à domicile","publicDetail":"Intervenante à domicile qui souhaite intégrer une Equipe Autonome","domaine":"Techniques d'intervention à domicile","format":"Distanciel","precision":"","territoire":"","duree":"6 h (3 × 2 h sur 3 semaines)","prerequis":"Être en poste en tant qu’intervenante à domicile","requis":"","organismes":"","objectifs":"Développer ses capacités personnelles à communiquer efficacement en équipe\nIntégrer les mécanismes indispensables à la transmission d'un message\nPrévenir et/ou gérer des situations difficiles\nTrouver des modes de communication efficaces pour échanger au sein de l'équipe autonome et avec la coordination","programme":"Les bases de la communication\n- repérage des enjeux d'une communication efficace\n- appropriation d'une communication verbale, non verbale et paraverbale\n- formalisation des modes de fonctionnement des membres de l'équipe autonome\n- formalisation du sujet d'expérimentation en intersession\nGestion des situations de tension et des personnalités difficiles\n- repérer, anticiper et prévenir les situations à risques et les facteurs déclencheurs de conflit\n- faire face aux situations vécues comme difficiles ou conflictuelles et identifier les solutions mobilisables\n- formaliser les irritants possibles du groupe, leurs facteurs et les sources d'apaisement dont chaque membre de l'équipe aurait besoin\nCommunication non violente et empathie\n- débat sur la distance/l'empathie et la posture professionnelle : la bonne distance entre excès d’empathie de contagion émotionnelle\n- être en mesure d'exprimer ses émotions, prendre de la distance tout en sécurisant son interlocuteur\n- devenir acteur d'un changement de sa communication et de ses comportements\n- adopter des postures professionnelles et optimiser les interactions dans le collectif de travail","motscles":"","nouveau":"Non","row":6},{"id":"F06","titre":"Entretien du cadre de vie","statut":"Publié","publics":"Intervenant à domicile","publicDetail":"Intervenante à domicile ; AVS ; AES","domaine":"Techniques d'intervention à domicile","format":"Présentiel","precision":"","territoire":"","duree":"7 à 14 h (1 à 2 jours)","prerequis":"Être en poste en tant qu’intervenante à domicile","requis":"","organismes":"AMN Conseil et formation ; ASTER Formation ; Autonomii ; CQFD ; Les Chênes","objectifs":"Acquérir une méthode professionnelle dans le ménage et l’entretien du domicile privé\nS’approprier les techniques de bases de l’entretien d’un logement\nOrganiser son travail en fonction des règles d’hygiène, de sécurité et d’ergonomie\nTravailler dans le respect des habitudes et du cadre de vie de la personne aidée\nAppréhender les produits à utiliser en fonction des surfaces","programme":"Les techniques générales de l’entretien du domicile privé\n- Méthodes utilisées en fonction des lieux et de leur organisation, des supports\n- Connaissance des matériels techniques utilisés au domicile\n- Adaptation de son travail aux matériels mis à disposition\n- Connaissance des produits d’entretien pour une utilisation optimale et sécurisée\n- Repérage des pictogrammes, consignes d’utilisation, dosage à respecter\n- Gestion des déchets et produits usagés dans une prise en compte environnementale et du cadre de vie de la personne aidée\nOrganisation au domicile\n- Organisation du travail en fonction des fréquences de l’entretien, de l’attente de la personne aidée (ménage courant ou de fond ?)\n- Prise en compte des contraintes propres à l’agencement du domicile, du cadre de vie de la personne aidée et des pathologies repérées\n- Protocole d’entretien en fonction des pièces du logement","motscles":"","nouveau":"Non","row":7},{"id":"F07","titre":"Parcours essentiel (niveau 1) – Accompagnement de la personne dépendante","statut":"Publié","publics":"Intervenant à domicile","publicDetail":"Intervenante à domicile ; AVS ; AES","domaine":"Techniques d'intervention à domicile","format":"Distanciel","precision":"Micro-learning + classes virtuelles","territoire":"","duree":"29 h (avec classes virtuelles en fin de chapitre)","prerequis":"Être en poste en tant qu’intervenante à domicile","requis":"","organismes":"","objectifs":"Acquérir des connaissances sur les activités d'aide à la personne dépendante à l'aide d'un dispositif de formation à distance type micro-learning.\nAssister à des classes virtuelles animées par un formateur et mettre en pratique les connaissances acquises.","programme":"Adapter sa posture professionnelle\n- technique de communication\n- développer une attitude relationnelle adaptée\nConnaissance de la personne agée\n- comprendre le processus de vieillissement\n- différencier les grands symptômes cognitivo-comportementaux\n- connaître les conséquences du vieillissement\nBesoin de la PA\n- Virginia Henderson et les besoins spécifiques de la PA\n- être capable de justifier son action\nBienveillance-bientraitance\n- de la maltraitance à la bientraitance : définitions et limites\n- prendre soin de la bientraitance : une démarche d'équipe\nHygiène\n- connaître les problématiques liées à l'hygiène\nLa mort, le deuil\n- la place de l'aide à domicile dans un processus de fin de vie\nGestes et postures\n- connaître les gestes d'ergonomie et les appliquer\n- intégrer les techniques de mobilisation\nPrévention du suicide\n- évaluer l'état de la personne\n- repérer un changement d'attitude\nDévelopper et maintenir l'autonomie\n- repérer les besoins\n- connaître le degré d'autonomie\nCOVID 19\n- connaître le covid19, les moyens de transmission, les risques de contamination\nFortes chaleurs\n- connaître les mécanismes de la déshydratation chez une personne fragilisée","motscles":"","nouveau":"Non","row":8},{"id":"F08","titre":"Parcours avancé (niveau 2) – Accompagnement de la personne dépendante","statut":"Publié","publics":"Intervenant à domicile","publicDetail":"Intervenante à domicile ; AVS ; AES","domaine":"Techniques d'intervention à domicile","format":"Distanciel","precision":"Micro-learning + classes virtuelles","territoire":"","duree":"40 h (avec classes virtuelles en fin de chapitre)","prerequis":"Avoir suivi le niveau 1 dans sa totalité — Être en poste en tant qu’intervenante à domicile","requis":"F07","organismes":"","objectifs":"Réaliser des repas répondant aux besoins nutritionnels de chacun, participer aux achats, s'assurer de la bonne gestion des stocks et entretenir les différents équipements utilisés en privilégiant des pratiques écoresponsables\nDistinguer les différentes formes de handicaps, de connaître leurs caractéristiques et leurs évolutions ainsi que les répercussions sur la personne et sur son entourage\nComprendre les conduites addictives et d'adapter au quotidien ses actions, ses attitudes et ses comportements face à une personne présentant une addiction\nPrévenir, désamorcer ou de faire face à une situation difficile en adaptant ses stratégies d'accompagnement et de communication pour réagir de manière appropriée aux situations rencontrées\nIdentifier les risques liés à son activité professionnelle et de mettre en œuvre les actions permettant de préserver son bien être et sa santé","programme":"Equilibre alimentaire et cuisine au quotidien\nComprendre le handicap pour mieux accompagner la personne\nAccompagner une personne souffrant d'addiction\nAccompagner et prévenir les situations difficiles\nPrévenir les risques professionnels\nPrévention du suicide\n- évaluer l'état de la personne\n- repérer un changement d'attitude\nDévelopper et maintenir l'autonomie\n- repérer les besoins\n- connaître le degré d'autonomie\nCOVID 19\n- connaître le covid19, les moyens de transmission, les risques de contamination\nFortes chaleurs\n- connaître les mécanismes de la déshydratation chez une personne fragilisée","motscles":"","nouveau":"Non","row":9},{"id":"F09","titre":"Accompagner la personne en soins palliatifs et ses proches – niveau 1","statut":"Publié","publics":"Intervenant à domicile ; Personnel soignant","publicDetail":"Intervenante à domicile ; AVS ; AES ; AS","domaine":"Savoir-être, accompagnement et relation d'aide","format":"Distanciel","precision":"","territoire":"","duree":"7 h (1 jour)","prerequis":"Être en poste en tant qu'intervenante à domicile, AS, AVS, AES","requis":"","organismes":"AD VENIR","objectifs":"Comprendre l’évolution des mentalités face à la maladie grave et à la mort pour mettre en place des réponses adaptées\nIdentifier les différentes situations de souffrance face à la maladie et à la mort\nConstruire un accompagnement avec le patient et ses proches\nAnalyser et comprendre la place des deuils dans la vie","programme":"S’approprier les principes d’éthique pertinents aux soins palliatifs\nIdentifier les différentes situations de soins palliatifs rencontrées pour adapter la prise en charge\nAméliorer, en équipe multidisciplinaire, le soulagement des malades en soins palliatifs par une approche globale de la personne : physique, psychologique, sociale, spirituelle","motscles":"fin de vie, deuil","nouveau":"Non","row":10},{"id":"F10","titre":"Accompagner la personne en soins palliatifs et ses proches – niveau 2","statut":"Publié","publics":"Intervenant à domicile ; Personnel soignant","publicDetail":"Intervenante à domicile ; AVS ; AES ; AS","domaine":"Savoir-être, accompagnement et relation d'aide","format":"Distanciel","precision":"","territoire":"","duree":"7 h (1 jour)","prerequis":"Avoir suivi le niveau 1 — Être en poste en tant qu'intervenante à domicile, AS, AVS, AES","requis":"F09","organismes":"AD VENIR","objectifs":"Analyser l’évolution des mentalités et les attitudes de notre société face à la mort\nMettre en œuvre et réaliser un accompagnement de la personne malade et ses proches","programme":"Identifier et comprendre le tabou de la mort aujourd’hui\nReconnaitre les différentes situations de souffrance face à la maladie et à la mort\nAnalyser les mécanismes psychologiques de défense face à la maladie et à la mort\nDéterminer le savoir, savoir-faire, le savoir-être","motscles":"fin de vie, deuil","nouveau":"Non","row":11},{"id":"F11","titre":"Acquérir des notions d'éthique pour prendre soin lors de l'intervention à domicile","statut":"Publié","publics":"Intervenant à domicile ; Personnel soignant","publicDetail":"Intervenante à domicile ; AVS ; AES ; AS","domaine":"Savoir-être, accompagnement et relation d'aide","format":"Distanciel","precision":"","territoire":"","duree":"7 h (1 jour)","prerequis":"Avoir suivi le niveau 1 — Être en poste en tant qu'intervenante à domicile, AS, AVS, AES","requis":"F09","organismes":"AD VENIR","objectifs":"Analyser l’évolution des mentalités et les attitudes de notre société face à la mort\nMettre en œuvre et réaliser un accompagnement de la personne malade et ses proches","programme":"Identifier et comprendre le tabou de la mort aujourd’hui\nReconnaitre les différentes situations de souffrance face à la maladie et à la mort\nAnalyser les mécanismes psychologiques de défense face à la maladie et à la mort\nDéterminer le savoir, savoir-faire, le savoir-être","motscles":"","nouveau":"Non","row":12},{"id":"F12","titre":"Faire face au refus d’aide ou de soin","statut":"Publié","publics":"Intervenant à domicile ; Personnel soignant","publicDetail":"Intervenante à domicile ; AVS ; AES ; AS","domaine":"Savoir-être, accompagnement et relation d'aide","format":"Présentiel","precision":"","territoire":"","duree":"14 h (2 jours)","prerequis":"Être en poste en tant qu'intervenante à domicile","requis":"","organismes":"ASTER Formation ; AMN conseil et formation","objectifs":"Echange et analyse de différentes situations de refus de soins (refus de traitement, refus alimentaires, refus de dialogue, refus de soins d’hygiène…)\nContexte des refus de soins (histoire de vie, personnalité, facteurs internes, environnement, attitudes des aidants…)\nApproche du vécu de l’aidant face au refus de soin (sentiment de culpabilité et d’échec, risque d’autoritarisme, lâcher prise…)","programme":"Le refus de soins - aspects psychologiques\n- Le refus : un mécanisme de défense, une forme d’expression de la liberté de choix ?\n- Le refus : une conduite qui témoigne de la personnalité, du caractère, ou expression de la pathologie ?\n- Notions d’éthique, d’accompagnement et de relation d’aide\n- La responsabilité de l’aidant\nAspects éthiques et législatifs des refus de soins\n- Jusqu’où respecter le choix de la personne quand elle refuse ?\n- de la non-assistance à la personne en danger, respect du choix de vie de la personne\n- La question des directives anticipées, la question de la personne de confiance, que dit la loi ?\n- La question du choix, de la liberté, du consentement, de la décision\n- Cette intervention aidera l’aidant à savoir adapter sa réponse et trouver l’attitude juste face au refus de soin.","motscles":"","nouveau":"Non","row":13},{"id":"F13","titre":"Gestion de l'agressivité : verbale, comportementale, sexuelle","statut":"Publié","publics":"Intervenant à domicile","publicDetail":"Intervenante à domicile","domaine":"Savoir-être, accompagnement et relation d'aide","format":"Présentiel","precision":"","territoire":"Bouches-du-Rhône (13)","duree":"14 h (2 jours)","prerequis":"Être en poste en tant qu'intervenante à domicile","requis":"","organismes":"","objectifs":"Savoir identifier et comprendre les différents types d'agression\nComprendre le mécanisme et le processus amenant à l'agressivité\nApprendre à renforcer ses capacités à réagir dans le cadre professionnel, passer le relais\nApprendre à être dans une démarche préventive\nÊtre en capacité d'avoir des outils efficaces face à l'agressivité verbale, comportementale, sexuelle","programme":"Le stress et les émotions\n- I. Conséquences et stratégies d'adaptation\n- II. La CNV (communication non-violente)\n- III. La colère/ la culpabilité\n- IV. Outils de prévention\nMieux comprendre nos pensées, difficultés, attentes…\n- I. Comment aider à améliorer le bien-être autour de moi ?\n- II. L'auto estime et la confiance en soi\n- III. Avoir des clés, outils, pour faciliter la relation de confiance, avec nous-mêmes et avec les autres\n- IV. Comment faire face à l'agressivité ?","motscles":"violence, conflit, tension","nouveau":"Non","row":14},{"id":"F14","titre":"Repérage de la maltraitance et promotion de la bientraitance","statut":"Publié","publics":"Intervenant à domicile ; Personnel soignant ; Encadrement intermédiaire","publicDetail":"Intervenante à domicile ; Aide soignante ; AVS ; IDE ; coordinatrice de parcours","domaine":"Savoir-être, accompagnement et relation d'aide","format":"Distanciel","precision":"","territoire":"","duree":"7 h (1 jour)","prerequis":"Être en poste en tant qu'intervenante à domicile, AS, AVS, IDE, Coordinatrices","requis":"","organismes":"","objectifs":"Être en capacité de repérer les situations de maltraitance\nProposer des points de repère sur les conduites à tenir et les pratiques à développer\nInformer et sensibiliser à la prévention de la maltraitance des usagers comprendre les enjeux d’un accompagnement adapté\nIdentifier les caractéristiques et les facteurs de risques de maltraitance\nRechercher des réponses adaptées aux différentes situations rencontrées","programme":"Connaitre le cadre règlementaire\nDévelopper la connaissance des risques de maltraitance\nRepérer les situations de Maltraitance institutionnelle\nReconnaître et promouvoir les ressources des professionnels\nRéfléchir sur la prévention de la maltraitance\nComprendre les enjeux du signalement\nDévelopper les repères de la Bientraitance\nDévelopper la qualité du lien entre professionnels et usager\nAccompagner les professionnels dans leur démarche de bientraitance","motscles":"","nouveau":"Non","row":15},{"id":"F15","titre":"Accompagnement à la mobilité – Prévention des TMS","statut":"Publié","publics":"Intervenant à domicile ; Personnel soignant","publicDetail":"Intervenante à domicile ; AVS ; AES ; AS","domaine":"Prévention des risques professionnels et sécurité","format":"Présentiel","precision":"","territoire":"","duree":"14 h (2 jours)","prerequis":"Être en poste en tant qu'intervenante à domicile, AVS, AES, AS","requis":"","organismes":"AUTONOMII ; ABS Formation ; Aster Formation ; CQFD ; IRTS ; Melioris","objectifs":"Définir les Troubles Musculo-Squelettiques\nEtudier et prévenir les risques d'apparition de maladies professionnelles et d'accidents du travail\nAcquérir les bonnes postures et les bons gestes professionnels\nMaîtriser l'utilisation des aides techniques aux transferts\nMettre en pratique des exercices physiques de prévention active des troubles musculo squelettiques (TMS)","programme":"Bilan initial\n- analyse et bilan de la situation\n- mise au point sur les notions d’anatomie et pathologies du corps humain\n- découverte des facteurs de risque au travail\nEtudier et prévenir les risques d’apparition de maladies professionnelles et d’accidents du travail\n- définition de l’ergomotricité\n- rappels anatomiques et physiologiques\n- comprendre le fonctionnement de son corps\n- mise en mouvement\nAcquérir les bonnes postures et les gestes professionnels adaptés\n- gestes à adopter pour prévenir les TMS\n- mise en pratique des différentes techniques de manutention et de mobilisation\nMaîtriser l'utilisation des aides techniques aux transferts\n- revue et utilisation des aides techniques\n- mise en œuvre des différentes techniques de manutention\n- mettre en application les techniques de manutention et de mobilisation des personnes en respectant les principes de sécurité et d’économie d’effort","motscles":"dos, manutention, postures, ergonomie","nouveau":"Non","row":16},{"id":"F16","titre":"AFGSU 2","statut":"Publié","publics":"Intervenant à domicile ; Personnel soignant","publicDetail":"Aide-soignante ; intervenante à domicile dans le cadre d’une VAE","domaine":"Prévention des risques professionnels et sécurité","format":"Présentiel","precision":"","territoire":"","duree":"21 h (3 jours)","prerequis":"Être en poste dans son emploi","requis":"","organismes":"","objectifs":"Identifier une situation d’urgence vitale ou potentielle\nRéaliser les gestes d’urgence adaptés à cette situation\nParticiper à la réponse d’une situation d’urgence collective ou sanitaire exceptionnelle","programme":"Les situations d'accident sont abordées en huit modules :\n- La protection\n- L'alerte\n- La victime s'étouffe\n- La victime saigne abondamment\n- La victime est inconsciente\n- La victime ne respire pas\n- La victime se plaint d’un malaise\n- La victime se plaint après un traumatisme (plaie, brûlure, atteinte des os et des articulations…)","motscles":"secourisme, urgences, gestes et soins d'urgence","nouveau":"Non","row":17},{"id":"F17","titre":"APS ASD Certificat acteur prévention secours de l'aide à domicile","statut":"Publié","publics":"Intervenant à domicile","publicDetail":"Intervenante à domicile ; AVS ; AES","domaine":"Prévention des risques professionnels et sécurité","format":"Présentiel","precision":"","territoire":"","duree":"28 h (4 jours)","prerequis":"Être en poste en tant qu’intervenante à domicile, AVS, AES","requis":"","organismes":"","objectifs":"Contribuer à la suppression ou à la réduction des risques professionnels\nParticiper à l'amélioration des conditions de travail, à la qualité des soins et à la sécurité des personnes accompagnées\nAdopter un comportement adapté en cas d'accident, incident ou dysfonctionnement sur le lieu de travail","programme":"La notion de situation de travail, de danger, de situation dangereuse, de risque, dommage dans le milieu professionnel :\n- I. Les accidents de travail et les maladies professionnelles, les préjudices humains et économiques pour l'entreprise\n- II. Les principaux éléments de l'anatomie et de la physiologie de l'appareil locomoteur\n- III. Les atteintes de l'appareil locomoteur, lombalgies, TMS …\n- IV. Les différents facteurs de risques\n- V. Les principes de base de sécurité physique et d'économie d'effort dans la manutention manuelle des personnes à mobilité réduite\n- VI. La remontée des informations, aspects réglementaires et procéduraux, les différents acteurs impliqués dans la prévention\n- VII. Les différentes techniques de manutention des personnes, approche des différentes aides techniques et de leur utilisation\n- VIII. Le domaine et les modalités d'intervention\n- IX. L'obligation de porter secours. les limites de la responsabilité de l'APS dans et hors de l'entreprise\n- X. Les techniques, conduites à tenir et justificatifs du référentiel technique de l'APS ASD\n- XI. Les dispositifs de coupure des énergies et des fluides (électricité, gaz, eau)\n- XII. Les dispositions en cas d'incendie\n- XIII. Les outils de communication adaptés","motscles":"secourisme, prévention, TMS, sauveteur","nouveau":"Non","row":18},{"id":"F18","titre":"MAC APS ASD Prévention secours (Maintien et actualisation des compétences)","statut":"Publié","publics":"Intervenant à domicile","publicDetail":"Intervenante à domicile","domaine":"Prévention des risques professionnels et sécurité","format":"Présentiel","precision":"","territoire":"","duree":"14 h (2 jours)","prerequis":"Être titulaire de l’APS ASD depuis maximum 2 ans","requis":"F17","organismes":"","objectifs":"Maintenir les compétences de l'APS ASD, définies dans le référentiel de formation, à un niveau au moins équivalent voire supérieur à celui de la formation initiale afin de le reconduire en tant qu'acteur de prévention et secours dans l'entreprise","programme":"Domaine de compétence : prévention\n- Actualisation des compétences liées à la prévention des risques liés à l'activité des intervenants à domicile\n- Actualisation des techniques de manutention des personnes à mobilité réduite\n- Évaluation des compétences\nDomaine de compétence : secours\n- Actualisation des gestes d'urgence\n- Évaluation des compétences","motscles":"secourisme, prévention, TMS, sauveteur, recyclage","nouveau":"Non","row":19},{"id":"F19","titre":"Maîtriser les aides techniques pour les transferts","statut":"Publié","publics":"Intervenant à domicile ; Personnel soignant","publicDetail":"Intervenante à domicile ; AVS ; AES ; AS","domaine":"Prévention des risques professionnels et sécurité","format":"Présentiel","precision":"","territoire":"","duree":"7 h (1 jour)","prerequis":"Être en poste en tant qu'intervenante à domicile, AVS, AES, AS","requis":"","organismes":"AUTONOMII ; CQFD ; IRTS","objectifs":"Assurer le confort et le bien-être de la personne au lit et au fauteuil\nUtiliser les aides techniques et de positionnement de manière adéquate\nIdentifier le risque lié à l'escarre\nPrévenir et transmettre l'information","programme":"Audit : analyse et bilan de la situation (personnel, environnement, matériel à disposition)\nLe risque d’escarre : qu’est-ce que l’escarre comment l’évaluer ? comment le prévenir ?\nLes aides techniques et leur utilisation, indications.\nRappel sur les bonnes pratiques de la contention\nCoussins d’assise et leurs classes\nLit médicalisé : utilisation et réglages","motscles":"lève-personne, verticalisateur, lit médicalisé, escarres","nouveau":"Non","row":20},{"id":"F20","titre":"Prévention de la chute chez la personne âgée","statut":"Publié","publics":"Intervenant à domicile ; Personnel soignant","publicDetail":"Intervenante à domicile ; AVS ; AES ; AS","domaine":"Prévention des risques professionnels et sécurité","format":"Présentiel ou distanciel","precision":"","territoire":"","duree":"14 h (2 jours)","prerequis":"Être en poste en tant qu'intervenante à domicile, AVS, AES, AS","requis":"","organismes":"AMN Conseil et formation ; CQFD ; FNAQPA GERONFOR ; FORMASSAD","objectifs":"Évaluer les risques de chute afin de pouvoir les prévenir\nÉlaborer un outil de dépistage adapté\nÉprouver et mettre en pratique les moyens envisagés pour prévenir la chute\nContribuer à l'amélioration de l'accompagnement de la personne âgée\nContribuer à l'implication des professionnels de santé dans la qualité et la sécurité des soins ainsi que dans la gestion des risques","programme":"Évaluer les risques de chute afin de pouvoir les prévenir\n- La personne âgée : le vieillissement, la perte d'autonomie\n- Les chutes : statistiques, impact humain et économique, facteurs de risques\n- Les conséquences des chutes chez la personne âgée (physique, psychologique, psychique)\n- Évaluation du risque de chute, recommandations de l'HAS\n- Savoir s'adapter au vieillissement physiologique et pathologique\nÉlaborer un outil de dépistage adapté\n- Analyse des pratiques professionnelles, de cas cliniques amenés par les stagiaires, échanges, études des difficultés rencontrées\n- Sous-groupes de travail : élaboration d'un outil de dépistage du risque de chute adapté\n- Les axes et actions d'améliorations envisageables\n- Mise en commun des travaux\nOptimiser la qualité de l'accompagnement de la personne âgée\n- Participation au maintien de l'autonomie des résidents selon les recommandations (HAS, CNAM…)\n- Positionnement professionnel face au syndrome post-chute (phase aiguë, phase évoluée), accompagnement de la personne âgée dans sa vie quotidienne, mise en place d'aides techniques\nMesures préventives des chutes chez la personne âgée\n- Élaboration d'outils à destination des soignants, des aidants et des résidents mettant en avant les mesures de prévention des chutes chez la personne âgée\nÉprouver et mettre en pratique les moyens envisagés pour prévenir le risque de chute","motscles":"prévention des chutes","nouveau":"Non","row":21},{"id":"F21","titre":"PSC1","statut":"Publié","publics":"Intervenant à domicile ; Personnel soignant ; Encadrement intermédiaire ; Support et direction","publicDetail":"Tout public","domaine":"Prévention des risques professionnels et sécurité","format":"Présentiel","precision":"","territoire":"","duree":"7 h (1 jour)","prerequis":"Être en poste dans son emploi","requis":"","organismes":"","objectifs":"Acquérir les compétences nécessaires à l’exécution d'une action citoyenne d'assistance à personne en réalisant les gestes élémentaires de secours","programme":"Les situations d'accident sont abordées en huit modules :\n- La protection\n- L'alerte\n- La victime s'étouffe\n- La victime saigne abondamment\n- La victime est inconsciente\n- La victime ne respire pas\n- La victime se plaint d’un malaise\n- La victime se plaint après un traumatisme (plaie, brûlure, atteinte des os et des articulations…)","motscles":"secourisme, premiers secours, gestes qui sauvent","nouveau":"Non","row":22},{"id":"F22","titre":"Risques infectieux et santé au travail","statut":"Publié","publics":"Intervenant à domicile","publicDetail":"Intervenante à domicile ; AVS ; AES","domaine":"Prévention des risques professionnels et sécurité","format":"Présentiel ou distanciel","precision":"Présentiel uniquement dans le 91","territoire":"","duree":"7 h (1 jour)","prerequis":"Être en poste en tant qu'intervenante à domicile, AVS, AES","requis":"","organismes":"AGE 91 ; CQFD","objectifs":"Eviter tout risque de transmission d’infection par le sang, les substances biologiques d’origine humaines et tout risque de transmission croisée de micro-organismes.","programme":"Le risque infectieux\nLa tenue professionnelle\nL’hygiène des mains\nLes protections complémentaires : gants, surblouse, tablier, masque, lunettes…\nLa gestion des surfaces\nLa gestion du matériel\nLa gestion du linge\nLa gestion des excrétions\nLa gestion des déchets\nLes AES (Accident par Exposition au Sang)\n- Définition\n- Prévention\n- Gestion du matériel à risque\n- Conduites à tenir","motscles":"","nouveau":"Non","row":23},{"id":"F23","titre":"Appréhender le handicap de l’adulte","statut":"Publié","publics":"Intervenant à domicile ; Personnel soignant","publicDetail":"Intervenante à domicile ; AVS ; AES","domaine":"Personnes âgées et en situation de handicap","format":"Présentiel","precision":"","territoire":"","duree":"21 h (3 jours)","prerequis":"Être en poste en tant qu’intervenante à domicile, AS, AES, AVS","requis":"","organismes":"ASTER Formation ; NEO SOCIAL ; HEGOA ; AMN Conseil et formation","objectifs":"Définir les handicaps et leurs spécificités (physiques, psychiques et malentendants)\nComprendre les conséquences du handicap sur la prise en charge d’une personne\nConnaître les dispositifs de prise en charge du handicap pour mieux accompagner la personne et les familles\nApprendre à travailler en sécurité pour la personne aidée et l’intervenant\nAdapter son intervention au degré du handicap, de la dépendance\nApprendre la manipulation du matériel de mobilisation liés à la dépendance","programme":"Définition et caractéristiques des handicaps\n- Analyse des différents handicaps\n- Perception des problématiques sur la vie quotidienne et sur le travail à domicile auprès d’une personne dépendante ou handicapée\n- Modes de prise en charge d’une personne handicapée ou âgée\n- Comportement à adopter auprès d’une personne handicapée ou dépendantes\nTechniques de manipulation des personnes handicapées ou dépendantes\n- Connaissance des gestes et postures pour travailler en toute sécurité pour la personne aidée et l’intervenant\n- Mobilisation de la personne grâce aux matériels adaptés à la situation du handicap ou de la dépendance\nDécouvrir la personne malentendante","motscles":"","nouveau":"Non","row":24},{"id":"F24","titre":"Connaissance de la personne âgée et pathologies liées au vieillissement","statut":"Publié","publics":"Intervenant à domicile ; Personnel soignant","publicDetail":"Intervenante à domicile ; AVS ; AES ; AS","domaine":"Personnes âgées et en situation de handicap","format":"Distanciel","precision":"","territoire":"","duree":"7 h (1 jour)","prerequis":"Être en poste en tant qu’intervenante à domicile, AS, AES, AVS","requis":"","organismes":"AD VENIR","objectifs":"Appréhender le vieillissement et les différentes pathologies liées à l’âge.\nSavoir se comporter face à certaines personnes ou face à des situations difficiles.\nAdapter sa communication pour faciliter l’accompagnement.","programme":"Appréhender les conséquences psychologiques et physiologiques du vieillissement normal.\nLe problème de la mémoire et des pertes cognitives\nLes mécanismes de défenses\nEtude des besoins de la personne âgée\nConcept de dépendance et d’autonomie\nSavoir accompagner une personne âgée : concept d’accompagnement, notions de bases sur la communication, point de vigilance sur la perte d’autonomie","motscles":"","nouveau":"Non","row":25},{"id":"F25","titre":"Nutrition, dénutrition de la personne âgée et ses solutions","statut":"Publié","publics":"Intervenant à domicile","publicDetail":"Intervenante à domicile ; AVS ; AES","domaine":"Personnes âgées et en situation de handicap","format":"Distanciel","precision":"","territoire":"","duree":"7 h (1 jour)","prerequis":"Être en poste en tant qu'intervenante à domicile, AVS, AES","requis":"","organismes":"AD VENIR","objectifs":"Sensibiliser tous les acteurs médico-sociaux et sociaux aux conséquences d’une nutrition inadaptée personne âgée\nSavoir repérer les situations à risque de dénutrition à domicile\nMettre en place un soin nutritionnel adapté au contexte de la personne suivie","programme":"Actualiser ses connaissances sur la nutrition\nReconnaitre les principes nutritionnels spécifiques à la personne âgée\nPrévenir et reconnaitre les signes d’une dénutrition chez la personne âgée\nIntégrer la dénutrition de la personne âgée comme facteur de risques\nCoordonner son intervention et mettre en pratique les solutions adaptées en cas de dénutrition auprès d’une personne âgée","motscles":"alimentation, repas, dénutrition","nouveau":"Non","row":26},{"id":"F26","titre":"Service à la personne, maladie et handicap psychique : comment intervenir à domicile ?","statut":"Publié","publics":"Intervenant à domicile","publicDetail":"Intervenante à domicile ; AVS ; AES","domaine":"Personnes âgées et en situation de handicap","format":"Présentiel","precision":"","territoire":"","duree":"14 h (2 jours)","prerequis":"Être en poste en tant qu'intervenante à domicile, AVS, AES","requis":"","organismes":"ISATIS","objectifs":"Repérer les particularités et caractéristiques des troubles psychiques et du handicap psychique.\nIdentifier l’impact social et les conséquences du handicap psychique\nComprendre les difficultés rencontrées par les personnes souffrant de troubles psychiques, leurs particularités\nComprendre l’impact de l’intervention à domicile pour une personne souffrant de troubles psychiques\nMieux appréhender l’attitude et le mode de communication à adopter avec les personnes souffrant d’un handicap psychique.\nIdentifier les potentialités mais aussi les limites de l’intervention du professionnel à domicile","programme":"Regard de la société sur le handicap psychique : nos représentations et la réalité sur ce handicap\nHandicap psychique : de quoi parle-t-on ?\nManifestations et répercussions des troubles psychiques dans le quotidien d’une personne et dans son logement\nAider et accompagner une personne dans sa singularité : qu’est-ce que cela signifie ?\nPlace et posture du professionnel intervenant à domicile : comment réagir, quelle est la “bonne distance” à observer ?\nLes problèmes et/ou difficultés liés au handicap psychique : les signes qui peuvent alerter le professionnel et les actions correctives à mettre en place\nLes situations difficiles et/ou conflictuelles : attitudes à éviter et celles à privilégier","motscles":"","nouveau":"Non","row":27},{"id":"F27","titre":"Formation Aspiration endotrachéale","statut":"Publié","publics":"Intervenant à domicile ; Personnel soignant","publicDetail":"AS ; AES ; intervenante à domicile intervenant chez une personne trachéotomisée","domaine":"Santé et soin","format":"Présentiel","precision":"","territoire":"","duree":"14 h (2 jours + stage clinique)","prerequis":"Être en poste en tant qu’intervenante à domicile, AS","requis":"","organismes":"","objectifs":"Effectuer des aspirations endotrachéales en toute sécurité répondant à des normes d'efficacité, d'hygiène et de respect des personnes\nPrendre en compte l'environnement et les caractéristiques de la personne qui doit bénéficier de ces soins (personne trachéotomisée depuis plus de trois semaines)\nDiscerner le contexte dans lequel elle est autorisée à assurer ces aspirations","programme":"S'assurer des connaissances du stagiaire et redéfinir avec un langage adapté : respiration, toux, expectoration, aspiration endotrachéale, trachéotomie\nDécrire l'anatomie et la physiologie de l'appareil respiratoire\n- Les différentes structures et leur fonction : voies aériennes, poumons, structures thoraciques\n- La physiologie de l'appareil respiratoire : ventilation, échanges gazeux\nLister les principales pathologies de l'appareil respiratoire\n- Généralités sur les atteintes possibles : neurologiques et/ou musculaires, de la cage thoracique, des voies aériennes et/ou du tissu pulmonaire\nComprendre les modifications anatomo-physiologiques lors d'une trachéotomie, ses indications\nDécouvrir le matériel utilisé\n- Les différentes sortes de canule et leurs composantes\n- Les sondes d'aspiration et le système aspiratif\nApprendre à réaliser les gestes primordiaux auprès d'une personne trachéotomisée\n- Rappel des différents critères d'un soin de qualité\n- L'aspiration endotrachéale : objectif du soin, matériel nécessaire, descriptif du soin, éléments de transmission, incidents possibles\n- Le soin de trachéotomie en cas de décanulation : objectif, matériel nécessaire, descriptif du soin\nRepérer les répercussions psychologiques, physiques et sociales pour une personne trachéotomisée","motscles":"","nouveau":"Non","row":28},{"id":"F28","titre":"Fragilité : repérage et accompagnement","statut":"Publié","publics":"Intervenant à domicile ; Personnel soignant","publicDetail":"Intervenante à domicile ; AVS ; AES ; AS","domaine":"Santé et soin","format":"Distanciel","precision":"","territoire":"","duree":"7 h (1 jour)","prerequis":"Être en poste en tant qu'intervenante à domicile, AS, AVS, AES","requis":"","organismes":"AD VENIR","objectifs":"Comprendre les mécanismes de la fragilité et les incidences de la perte d’autonomie.\nRepérer la perte d’autonomie, évaluer, transmettre en équipe pluridisciplinaire.\nAméliorer les pratiques et la qualité de vie du bénéficiaire et de l’aidant","programme":"Définir la fragilité\nComprendre le contexte et les enjeux de la fragilité\nPrésentation des 7 fiches repères de la perte d’autonomie ou de son aggravation\nIdentifier le rôle et les compétences de chaque intervenant\nLes risques sur la santé des aidants\nMettre en pratique les 7 repères","motscles":"","nouveau":"Non","row":29},{"id":"F29","titre":"Maladie d’Alzheimer et troubles apparentés – niveau 1","statut":"Publié","publics":"Intervenant à domicile ; Personnel soignant","publicDetail":"Intervenante à domicile ; AVS ; AES ; AS","domaine":"Santé et soin","format":"Distanciel","precision":"","territoire":"","duree":"7 h (1 jour)","prerequis":"Être en poste en tant qu'intervenante à domicile, AS, AES, AVS","requis":"","organismes":"AD VENIR","objectifs":"Acquérir les connaissances clés sur la maladie d’Alzheimer et les différentes démences\nComprendre les troubles du comportement des malades.\nSavoir accompagner une personne atteinte de la maladie d’Alzheimer ou de troubles apparentés","programme":"Connaitre la maladie d’Alzheimer et les troubles apparentés\nMieux comprendre les troubles psycho-comportementaux\nDévelopper un accompagnement de qualité\nComprendre la place du soignant dans la prise en soin globale\nMieux accompagner les aidants naturels","motscles":"démence, troubles cognitifs, mémoire","nouveau":"Non","row":30},{"id":"F30","titre":"Maladie d’Alzheimer et troubles apparentés – niveau 2","statut":"Publié","publics":"Intervenant à domicile ; Personnel soignant","publicDetail":"Intervenante à domicile ; AVS ; AES ; AS","domaine":"Santé et soin","format":"Distanciel","precision":"","territoire":"","duree":"7 h (1 jour)","prerequis":"Avoir suivi le niveau 1 — Être en poste en tant qu'intervenante à domicile, AS, AVS, AES","requis":"F29","organismes":"AD VENIR","objectifs":"Maîtriser les « savoir-faire » concernant la communication verbale et non verbale avec les personnes atteintes de maladie d’Alzheimer ou maladies apparentées.\nAccompagner la personne atteinte de troubles cognitifs en organisant des activités quotidiennes adaptées.\nMaîtriser les connaissances théoriques et pratiques sur la maladie d’Alzheimer et les maladies neurodégénératives.","programme":"Connaitre la maladie d’Alzheimer\nLa communication verbale et non verbale\nGérer les troubles psychologiques et comportementaux\nLe refus\nAccompagner à domicile en respectant le « territoire » l’intimité et les relations familiales/sociales\nDéfinir des solutions adaptées en termes d’aménagement du domicile pour améliorer l’autonomie\nIdentifier les activités quotidiennes les plus adaptées à chaque personne accompagnée\nComprendre le mécanisme de la personne atteinte de la maladie d’Alzheimer\nLa déambulation, les hallucinations","motscles":"démence, troubles cognitifs, mémoire","nouveau":"Non","row":31},{"id":"F31","titre":"Troubles de la déglutition et conduite à tenir à domicile","statut":"Publié","publics":"Intervenant à domicile","publicDetail":"Intervenante à domicile ; AVS ; AES","domaine":"Santé et soin","format":"Distanciel","precision":"","territoire":"","duree":"14 h (2 jours)","prerequis":"Être en poste en tant qu'intervenante à domicile, AES, AVS,","requis":"","organismes":"FNAQPA GERONFOR ; FRAISSINET ; ASTER formation","objectifs":"Cerner les mécanismes de la déglutition pour mieux en prévenir les troubles\nObjectiver les troubles de la déglutition et définir les modalités de reprise d’hydratation ou d’alimentation\nConnaître les conduites à tenir et les gestes d’urgence en cas de fausse route","programme":"Les causes et les symptômes des troubles de la déglutition : données anatomiques et physiologie de la déglutition ; dysphagies et presbyphagie ; les causes ; les symptômes et diagnostics des troubles de la déglutition\nTraitements et rééducation : traitements pharyngo-laryngés ; traitements étiologiques et symptomatiques ; diététique et déglutition ; adaptation des aliments en quantité ingérée ; adaptation de l’environnement\nTechniques de prévention et gestes d’urgence en cas de fausse route : techniques de rééducation ; déroulement du repas ; en cas de fausse route : que faire ? ; technique d’Heimlich ; prise en charge pluridisciplinaire des troubles de la déglutition","motscles":"fausse route, repas, alimentation","nouveau":"Non","row":32},{"id":"F32","titre":"Module spécifique Équipe autonome – logiciel métier Apologic (Perceval)","statut":"Publié","publics":"Intervenant à domicile","publicDetail":"Intervenante à domicile","domaine":"Bureautique et outils numériques","format":"Présentiel ou distanciel","precision":"","territoire":"","duree":"7 h (1 jour ou 2 demi-journées)","prerequis":"Connaissance en informatique de base","requis":"","organismes":"Arche MC2","objectifs":"Savoir gérer une fiche usager.\nRéaliser un cycle de prestations.\nAppréhender les différentes vues planning.\nModifier un planning.\nSaisir une absence client ou salarié, réaliser la réaffectation des prestations.\nGénérer les inter vacations\nEditer les plannings","programme":"Gestion de l'usager\nGestion des cycles salarié et usager\nGestion des cycles salariés\nGestion des cycles\nGestion du planning\nGestion des absences usagers\nGestion des absences salariés\nGestion d'un remplacement ou réaffectation\nGestion des inter vacations\nEditions","motscles":"planning, logiciel, Arche, Perceval","nouveau":"Non","row":33},{"id":"F33","titre":"Actualisation des compétences Aide-Soignant","statut":"Publié","publics":"Personnel soignant","publicDetail":"Aide-soignant","domaine":"DPC – Soins (SSIAD / CSI)","format":"Présentiel","precision":"","territoire":"","duree":"21 h (3 jours)","prerequis":"Être diplômé d’Etat Aide-Soignant","requis":"","organismes":"CRF","objectifs":"Accueillir, accompagner et évaluer un apprenant en stage\nDéfinir le métier et les missions de l’aide-soignant\nIdentifier les soins courants et les soins aigus\nRéaliser des nouveaux actes ou soins professionnels relatifs aux référentiels métier et de formation (arrêté du 10 juin 2021)","programme":"Animation d’activité d’information, d'éducation et de prévention à la promotion de la santé\nGestion des risques et démarche qualité\nCadre juridique de l’exercice professionnel\nLes fondamentaux du tutorat\nRaisonnement clinique partagé\nRespiration : Pose et changement de masque pour aide à la respiration en situation stable chronique\nSaturation en oxygène Changement de lunette à oxygène, Réalisation d'Aspiration EndoTrachéale\nÉlimination : Recueil aseptique des urines, Pose de suppositoire\nDiabète : Glycémie capillaire\nDivers : Lavage oculaire et instillation de collyre","motscles":"","nouveau":"Non","row":34},{"id":"F34","titre":"Manutention des PA et des PH","statut":"Publié","publics":"Personnel soignant","publicDetail":"AS ; infirmières","domaine":"DPC – Soins (SSIAD / CSI)","format":"Présentiel","precision":"","territoire":"","duree":"7 h (1 jour)","prerequis":"Aucun","requis":"","organismes":"AMN Conseil et formation ; AUTONOMII ; CQFD ; FNAQPA ; Orion Santé ; Oxygène formation","objectifs":"Connaitre et appliquer les principes de base de l’ergonomie\nReconnaitre et prévenir les risques de maladie professionnelle et d’accident du travail liés à la manutention\nAppliquer les règles de la manutention dans la pratique professionnelle quotidienne notamment lors de la manipulation des personnes et des équipements","programme":"Introduction aux troubles musculosquelettiques\n- Notions d’anatomie\n- Qu’est-ce qu’un TMS ?\n- Prévention des TMS\nLes principes et les règles de l’ergonomie\n- Définitions et missions\n- Le but de la manutention des malades\n- Les facteurs de risques\n- Les bonnes postures en manutention\nL’application des principes d’ergonomie pendant les soins\n- Lever-coucher\n- Les soins d’hygiène corporelle\n- La mise au fauteuil\n- L’utilisation des aides matérielles","motscles":"TMS, dos, postures, ergonomie","nouveau":"Non","row":35},{"id":"F35","titre":"Prévention et traitement des escarres","statut":"Publié","publics":"Personnel soignant","publicDetail":"AS ; Infirmières","domaine":"DPC – Soins (SSIAD / CSI)","format":"Présentiel","precision":"","territoire":"","duree":"14 h (2 jours)","prerequis":"Aucun","requis":"","organismes":"AMN Conseil et formation ; CJ Formation","objectifs":"Acquérir des connaissances sur les escarres et leur prise en charge\nPrévenir l'apparition d'escarres et identifier les différents facteurs de risque\nAppréhender les différents stades de l'escarre\nConnaître les différentes thérapeutiques existantes\nInscrire le soignant et son équipe dans une démarche d'amélioration de la qualité des soins.","programme":"Définition\n- Les escarres : une question de santé publique\n- Rappel d'anatomie et de physiologie de la peau\n- Caractéristiques : mode de constitution, typologies, stades\nPrévenir la formation d'escarres\n- Évaluation des facteurs de risque\n- Échelle de risques\n- Mesures de prévention : positionnement, matériel, hygiène, massage/effleurage, auto-éducation\nPrise en charge\n- Évaluation initiale, localisation, mesures thérapeutiques\n- Les types de plaies\n- Les différentes familles de pansement\n- Prise en charge de la douleur du patient\n- Suivi des soins et cicatrisation\nOrganisation des soins\n- Établissement de protocoles de prévention et de soins\n- Rôle des soignants et des personnels en charge des patients","motscles":"","nouveau":"Non","row":36},{"id":"F36","titre":"Prise en charge non médicamenteuse de la douleur","statut":"Publié","publics":"Personnel soignant","publicDetail":"AS ; Infirmières","domaine":"DPC – Soins (SSIAD / CSI)","format":"Présentiel","precision":"","territoire":"","duree":"14 h (2 jours)","prerequis":"Être professionnel de santé ; maîtriser le français écrit","requis":"","organismes":"CJ Formation ; FNAQPA Geronfor","objectifs":"Comprendre les bénéfices d’une prise en charge et d’un traitement non médicamenteux.\nConnaître les différentes approches thérapeutiques non-médicamenteuses.\nPrévenir et traiter les troubles psycho-comportementaux par les soins thérapeutiques non-médicamenteux (STNM) dans une approche pluridisciplinaire.\nConnaître les dimensions théoriques et cliniques des médiations corporelles dans la prise en charge de la douleur et de ses composantes associées telle que l’anxiété et la dépression.\nIntégrer les STNM dans la politique de prévention de l’établissement.\nExpérimenter quelques techniques thérapeutiques non médicamenteuses.","programme":"1 - Le contexte des soins thérapeutiques non médicamenteux (STNM)\n- Le contexte global de développement des techniques non médicamenteuses contre la douleur.\n- Les recommandations de bonnes pratiques de la HAS, l’ANESM et la SFGG.\n- Les bénéfices d’une prise en charge et d’un accompagnement non-médicamenteux.\n- Les limites des STNM.\n- La synergie des traitements médicamenteux et non-médicamenteux : le travail en équipe pluridisciplinaire.\n- La relation soignant/soigné.\n- Les conditions de réussite d’une prise en charge non médicamenteuse de la douleur\n2 - Les techniques antalgiques\n- L’ergonomie antalgique : le positionnement du patient (fauteuil, lit, transfert).\n- Le massage et le toucher antalgique.\n3 - Les techniques cognitives et comportementales\n- La relaxation.\n- L’imagerie guidée.\n- Le biofeedback.\n- La distraction.\n- La sophrologie*.\n- L’hypnose*.\n4 - Les techniques manuelles\n- L’acupuncture*.\n- L’ostéopathie*.\n- La podologie*\n5 - Les méthodes de physiothérapie\n- La thermothérapie*.\n- La cryothérapie*.\n- L’électrothérapie*.\n- La vibrothérapie*.\n- La réflexothérapie","motscles":"","nouveau":"Non","row":37},{"id":"F37","titre":"Rédiger des transmissions ciblées","statut":"Publié","publics":"Personnel soignant","publicDetail":"AS ; Infirmières","domaine":"DPC – Soins (SSIAD / CSI)","format":"Présentiel","precision":"","territoire":"","duree":"14 h (2 jours)","prerequis":"Être professionnel de santé ; maîtriser le français écrit","requis":"","organismes":"AMN Conseil et formation ; CJ Formation ; FNAQPA Geronfor","objectifs":"Améliorer la qualité des soins et du prendre soin au travers des transmissions ciblées.\nOrganiser un dossier patient conforme à la législation en vigueur.\nComprendre les enjeux des transmissions ciblées pour la continuité des soins.\nFaire le lien entre transmissions ciblées, diagnostic infirmier et projets de soins.\nOptimiser le partage des informations afin d’améliorer la qualité des soins.\nUtiliser les transmissions ciblées pour rendre plus opérationnelles les transmissions orales.\nRédiger des écrits structurés, opérants et exploitables par l’ensemble des acteurs afin d’assurer la continuité des soins.\nIdentifier les caractéristiques et la finalité d’une transmission ciblée.\nRédiger une transmission ciblée","programme":"Le contexte et les principes des transmissions ciblées\n- Les connaissances législatives.\n- La collaboration et délégation.\n- Les exigences de la HAS.\n- Les normes de qualité des soins infirmiers.\n- La loi du 4 mars 2002 : informations communicables et non-communicables.\n- La signification de « ciblé » pour les participants.\n- Le « pourquoi » de l’appellation transmissions ciblée\n- Les enjeux des transmissions ciblées.\n- Le partage des représentations des transmissions écrites d’un point de vue relationnel et organisationnel.\nLa méthodologie des transmissions ciblées\n- La structure des transmissions ciblées à l’aide de la méthode « données, actions, résultats (DAR) ».\n- Les éléments nécessaires pour faciliter les évaluations PATHOS et GIR.\n- La méthodologie des transmissions ciblées et des transmissions orales.\n- Les macrocibles.\n- Le raisonnement clinique dans les transmissions ciblées.\nAtelier pratique","motscles":"","nouveau":"Non","row":38},{"id":"F38","titre":"Les bases du management","statut":"Publié","publics":"Encadrement intermédiaire","publicDetail":"Coordinatrice de parcours","domaine":"Management","format":"Distanciel","precision":"","territoire":"","duree":"17,5 h (5 × 3,5 h + 1 h de suivi individuel)","prerequis":"Être en poste en tant que coordinatrice de parcours – manager une équipe d’IAD","requis":"","organismes":"","objectifs":"Se positionner dans son équipe\nOrganiser, accompagner, mobiliser ses anciens collègues\nConnaître les éléments clés du management\nFavoriser le bien-être au travail au profit du projet collectif","programme":"Le rôle du manager dans l'équipe et ses compétences clés\nLa communication au sein de l'équipe\nGérer les conflits\nConduire et animer une réunion d'équipe\nGérer sa charge de travail\nConduire et animer des entretiens individuels\nLes temps de formation individuels : \"mon défi personnel\"\nRégulation collective en visio","motscles":"manager, encadrement, équipe","nouveau":"Non","row":39},{"id":"F39","titre":"Evaluation à domicile : l’approche de l’environnement de travail","statut":"Publié","publics":"Encadrement intermédiaire","publicDetail":"Coordinatrice de parcours","domaine":"Prévention des risques professionnels et sécurité","format":"Distanciel","precision":"","territoire":"","duree":"14 h (4 demi-journées)","prerequis":"Être en poste en tant que Coordinatrice de parcours","requis":"","organismes":"FNAQPA GERONFOR","objectifs":"Définir une approche et une utilisation commune de l'outil d'évaluation à domicile\nAcquérir de nouvelles connaissances en matière d'évaluation des capacités/incapacités des personnes pour définir les besoins de compensations (humaines, services, matérielles, architecturales...)\nAcquérir un socle commun de connaissances des aides techniques et/ou technologiques\nPrévenir les risques professionnels pour réduire les accidents de travail\nAcquérir les notions en matière d'accessibilité et d'aménagement de l'environnement\nDévelopper l'utilisation de la télé-expertise : orienter la recherche d'informations pour résoudre les difficultés rencontrées au domicile","programme":"Définir une approche et une utilisation de votre outil d'évaluation interne\n- analyse des grands axes du guide de la CNSA\n- co-construction d'une procédure commune de travail à l'utilisation de l'outil d'évaluation\nTravail sur l'approche multidimensionnelle du vieillissement pathologique et de la dépendance\n- la dimension de la personne\n- l'environnement et les occupations de la personne\n- bilan global\nPrévenir les risques professionnels pour réduire les accidents de travail\n- définition des TMS\n- différents risques au domicile\n- importance des bonnes postures et gestes professionnelles adaptés\nAcquérir un socle commun de connaissances des aides techniques et/ou technologiques\n- présentation des aides techniques à l'autonomie\n- identification des intérêts et des limites de chaque solution\nAcquérir les notions en matière d'accessibilité et d'aménagement de l'environnement\n- travaux d'adaptation de l'habitat\n- comment prévenir les chutes\nDévelopper l'utilisation de la télé-expertise : orienter la recherche d'informations pour résoudre les difficultés rencontrées au domicile\n- échanges sur les difficultés rencontrées\n- études de cas\n- échanges sur les solutions à apporter","motscles":"","nouveau":"Non","row":40},{"id":"F40","titre":"Coordonner un service de Baluchonnage","statut":"Publié","publics":"Encadrement intermédiaire ; Support et direction","publicDetail":"Coordinatrice de parcours","domaine":"Techniques d'intervention à domicile","format":"Présentiel","precision":"","territoire":"","duree":"14 h (2 jours)","prerequis":"Être en poste en tant que Coordinatrice de parcours, Responsable d’agence, Directeur territorial","requis":"","organismes":"","objectifs":"Découvrir et s’approprier la philosophie du Baluchonnage\nComprendre les conditions du Baluchonnage et concevoir leur mise en adéquation avec le projet du porteur\nConcevoir le service du Baluchonnage dans ces aspects concrets (aspects cliniques et administratifs), prendre des décisions responsables en limitant les risques pour l’aidant, l’aidé et le personnel.\nComprendre la psychologie de l’aidant et accompagner les aidants à toutes les étapes\nÉvaluer les demandes de Baluchonnage, établir les propositions d’intervention individualisée","programme":"Philosophie et conditions du baluchonnage (2h)\nRecrutement et animation du personnel (1h30)\nPréparation des baluchonnages (3h30)\nGestion des baluchonnages (1h30)\nPost-baluchonnage (1h30)\nExtranet et journaux d’accompagnement (2h30)\nÉvaluation du service (1h) et test de connaissances (1h)","motscles":"répit, aidants","nouveau":"Non","row":41},{"id":"F41","titre":"La coordination et l’accompagnement à domicile d’une personne atteinte de la maladie d’Alzheimer et troubles apparentés","statut":"Publié","publics":"Encadrement intermédiaire","publicDetail":"Coordinatrice de parcours ; responsable de secteur","domaine":"Savoir-être, accompagnement et relation d'aide","format":"Distanciel","precision":"","territoire":"","duree":"7 h (1 jour)","prerequis":"Être en poste en tant que coordinatrice de parcours / responsable de secteur","requis":"","organismes":"AD VENIR","objectifs":"Maîtriser les fondamentaux de la maladie d’Alzheimer ou maladies apparentées.\nComprendre les répercussions des troubles cognitifs et psycho-comportementaux sur le quotidien, de la personne malade et son entourage.\nAméliorer la prise en charge à domicile d’une personne atteinte de la maladie d’Alzheimer par une meilleure coordination.","programme":"Connaitre la maladie d’Alzheimer\nLa communication verbale et non verbale\nGérer les troubles psychologiques et comportementaux\nLe refus\nAccompagner à domicile en respectant le « territoire » l’intimité et les relations familiales/sociales\nDéfinir des solutions adaptées en termes d’aménagement du domicile pour améliorer l’autonomie\nIdentifier les activités quotidiennes les plus adaptées à chaque personne accompagnée\nComprendre le mécanisme de la personne atteinte de la maladie d’Alzheimer\nLa déambulation, les hallucinations","motscles":"démence, troubles cognitifs, mémoire","nouveau":"Non","row":42},{"id":"F42","titre":"Ecriture et secret professionnel","statut":"Publié","publics":"Encadrement intermédiaire","publicDetail":"Coordinatrice de parcours ; responsable de secteur","domaine":"Management","format":"Distanciel","precision":"","territoire":"","duree":"7 à 14 h (1 à 2 jours)","prerequis":"Être en poste en tant que coordinatrice de parcours, responsable de secteur","requis":"","organismes":"FRAISSINET ; FNAQPA GERONFOR","objectifs":"Comprendre et intégrer les définitions clé en matière de secret professionnel (confidentialité, consentement, droit à l’information …)\nConnaitre et se conformer aux attendus de la loi et des usages\nRéaliser un écrit conforme aux attendus\nConnaitre la place de l’usager dans les écrits","programme":"Discrétion et secret professionnel : que dire ? que taire ?\nDéfinition, distinction des termes\nCadres juridiques du secret en fonction des missions et lieux d’exercices (faire la distinction entre l’exigence du secret pour une coordo mais aussi celui d’une intervenante à domicile)\nLe partage de l’information et la levée du secret : quand ? à qui ? comment ?\nMéthodologies des écrits professionnels\nIdentification des différents types d’écrits du secteur et éléments de différenciation (contenu, destinataire, etc) – redonner le cadre déontologique et éthique sur lesquels s’appuyer afin de retransmettre l’information aux intervenantes ensuite (notamment sur l’utilisation du cahier de liaison\nVocabulaire pour choisir des termes adaptés pour un écrit juste concis dans un esprit de synthèse\nPlace de l’usager dans les écrits professionnels (projet personnalisé d’accompagnement)","motscles":"","nouveau":"Non","row":43},{"id":"F43","titre":"Fragilité : repérage et accompagnement","statut":"Publié","publics":"Encadrement intermédiaire","publicDetail":"Coordinatrices de parcours","domaine":"Santé et soin","format":"Distanciel","precision":"","territoire":"","duree":"7 h (1 jour)","prerequis":"Être en poste en tant que Coordinatrices","requis":"","organismes":"AD VENIR","objectifs":"Comprendre les mécanismes de la fragilité et les incidences de la perte d’autonomie.\nRepérer la perte d’autonomie, évaluer, transmettre en équipe pluridisciplinaire.\nAméliorer les pratiques et la qualité de vie de l’usager","programme":"S’approprier le concept de fragilité\nSavoir repérer la fragilité\nS’approprier la recommandation de bonnes pratiques : Repérage des risques de perte d’autonomie ou de son aggravation pour les personnes âgées","motscles":"","nouveau":"Non","row":44},{"id":"F44","titre":"Gestion des priorités, de l’accueil – gestion de l’agressivité","statut":"Publié","publics":"Encadrement intermédiaire ; Support et direction","publicDetail":"Agent d’accueil ; coordinatrice de parcours / responsable de secteur","domaine":"Savoir-être, accompagnement et relation d'aide","format":"Présentiel","precision":"","territoire":"","duree":"14 h (2 jours)","prerequis":"Aucun","requis":"","organismes":"CQFD","objectifs":"Gérer son temps en fonction de ses priorités\nÊtre capable de prendre du recul pour repérer l'essentiel dans le but d'anticiper et d'organiser ses activités\nMettre en place une organisation personnelle efficace en gérant de manière optimale son énergie\nSavoir utiliser avec pertinence les ressources humaines et les outils de communication et d'organisation\nApprendre à gérer des situations d'agressivité","programme":"Analyse de l'utilisation du temps sur une journée\n- Missions et objectifs du poste de travail (fiche de poste, contraintes liées à l'évolution de l'environnement, …)\n- La répartition des tâches et l'estimation de leur durée\n- Les tâches récurrentes et incontournables, les tâches chronophages et leurs solutions\nVers une planification des activités satisfaisante\n- Définition des priorités, les différents niveaux des tâches\n- Connaître son biorythme\n- Limiter le temps subi pour accroître le temps maîtrisé\n- La gestion des imprévus\nLa gestion qualitative de votre temps en fonction de votre approche personnelle de l'activité\n- Comprendre sa manière personnelle d'appréhender le temps : le rapport de chacun au temps\n- Organiser concrètement son plan d'action individuel\n- S'autoriser des moments de réflexion, pour se ressourcer\n- Savoir utiliser toutes les ressources à sa disposition pour une négociation satisfaisante de toutes les sollicitations\nLa gestion de l'agressivité\n- Permettre d'identifier les signes d'agressivité\n- Désamorcer les situations de tensions / de crise\n- Utiliser des outils de communication adaptés afin d'anticiper les situations de crise","motscles":"violence, conflit, tension","nouveau":"Non","row":45},{"id":"F45","titre":"Manager des managers","statut":"Publié","publics":"Support et direction","publicDetail":"Responsable d’agence ; directeur de service ou territorial","domaine":"Management","format":"Présentiel ou distanciel","precision":"","territoire":"","duree":"14 h (2 jours)","prerequis":"Aucun","requis":"","organismes":"Fraissinet","objectifs":"Développer un management inspirant et coachant\nCréer un cadre de reporting autonomisant et propice à la montée en compétences des coordinatrices de parcours\nDévelopper la collaboration et l’entraide dans la chaine managériale","programme":"Accueil et introduction\nContexte et enjeux du management de managers\n- Evolution du rôle du RA ; contexte économique et social ; nouvelles pratiques et mode de collaboration partenarial ; attentes accrues des partenaires, des bénéficiaires et des collaborateurs : le périmètre du manager de managers\n- Les défis du management à distance, communication et collaboration, maintien de la motivation et de l’engagement, suivi et évaluation des performances\nLes pratiques de management de managers\n- Animer une équipe de managers\n- Définir le rôle et les missions des managers, déléguer et responsabiliser; organiser une communication et le travail collaboratif ; motiver et encourager ; gérer les conflits","motscles":"","nouveau":"Non","row":46},{"id":"F46","titre":"Organiser une démarche d’auto évaluation au sein de son service","statut":"Publié","publics":"Support et direction","publicDetail":"Responsable d’agence ; directeur territorial ; responsable qualité","domaine":"Autres thématiques","format":"Présentiel","precision":"","territoire":"","duree":"14 h (2 jours)","prerequis":"Expérience dans le secteur depuis d’au moins un an","requis":"","organismes":"PSPPACA","objectifs":"Connaître la démarche d’évaluation au sein d’un ESMS, les différentes étapes de la procédure d’évaluation et les outils supports de la démarche\nConnaître les différentes méthodes d’évaluation proposées dans le cadre de la démarche d’évaluation HAS\nConnaître les étapes pour mettre en place une démarche d’auto-évaluation et définir un plan projet","programme":"La démarche d’évaluation suivant le référentiel HAS\nLa mise en place de la méthode accompagné traceur dans le cadre de l’auto-évaluation\nLa mise en place de la méthode traceur ciblé dans le cadre de l’auto-évaluation","motscles":"","nouveau":"Non","row":47}],"sessions":[{"row":2,"fid":"F29","start":"2026-11-19","end":"","horaires":"9h00 – 17h00","lieu":"À distance (Teams)","modalite":"Distanciel","places":12,"statut":"Ouverte","organisme":"AD VENIR","commentaire":""},{"row":3,"fid":"F02","start":"2026-11-24","end":"2026-11-25","horaires":"9h00 – 17h00","lieu":"Vaucluse (84)","modalite":"Présentiel","places":8,"statut":"Ouverte","organisme":"","commentaire":""},{"row":4,"fid":"F05","start":"2026-11-26","end":"2026-12-10","horaires":"14h00 – 16h00 (26/11, 03/12, 10/12)","lieu":"À distance (Teams)","modalite":"Distanciel","places":6,"statut":"Ouverte","organisme":"","commentaire":"Équipes autonomes"},{"row":5,"fid":"F15","start":"2026-12-03","end":"2026-12-04","horaires":"9h00 – 17h00","lieu":"Bouches-du-Rhône (13)","modalite":"Présentiel","places":10,"statut":"Ouverte","organisme":"","commentaire":""},{"row":6,"fid":"F14","start":"2026-12-08","end":"","horaires":"9h00 – 17h00","lieu":"À distance (Teams)","modalite":"Distanciel","places":15,"statut":"Ouverte","organisme":"","commentaire":""},{"row":7,"fid":"F21","start":"2026-12-10","end":"","horaires":"9h00 – 17h00","lieu":"Essonne (91)","modalite":"Présentiel","places":0,"statut":"Complète","organisme":"","commentaire":""},{"row":8,"fid":"F17","start":"2027-01-11","end":"2027-01-14","horaires":"9h00 – 17h00","lieu":"Bouches-du-Rhône (13)","modalite":"Présentiel","places":10,"statut":"Ouverte","organisme":"","commentaire":""},{"row":9,"fid":"F38","start":"2027-01-12","end":"2027-02-09","horaires":"9h00 – 12h30 (5 mardis)","lieu":"À distance (Teams)","modalite":"Distanciel","places":8,"statut":"Ouverte","organisme":"","commentaire":""},{"row":10,"fid":"F30","start":"2027-01-21","end":"","horaires":"9h00 – 17h00","lieu":"À distance (Teams)","modalite":"Distanciel","places":12,"statut":"Ouverte","organisme":"AD VENIR","commentaire":""},{"row":11,"fid":"F09","start":"2027-01-26","end":"","horaires":"9h00 – 17h00","lieu":"À distance (Teams)","modalite":"Distanciel","places":12,"statut":"Ouverte","organisme":"AD VENIR","commentaire":""},{"row":12,"fid":"F44","start":"2027-01-28","end":"2027-01-29","horaires":"9h00 – 17h00","lieu":"Vaucluse (84)","modalite":"Présentiel","places":8,"statut":"Ouverte","organisme":"CQFD","commentaire":""},{"row":13,"fid":"F21","start":"2027-02-04","end":"","horaires":"9h00 – 17h00","lieu":"Vaucluse (84)","modalite":"Présentiel","places":10,"statut":"Ouverte","organisme":"","commentaire":""},{"row":14,"fid":"F35","start":"2027-02-11","end":"2027-02-12","horaires":"9h00 – 17h00","lieu":"Essonne (91)","modalite":"Présentiel","places":8,"statut":"Ouverte","organisme":"","commentaire":""},{"row":15,"fid":"F06","start":"2027-02-15","end":"2027-02-16","horaires":"9h00 – 17h00","lieu":"Essonne (91)","modalite":"Présentiel","places":8,"statut":"Ouverte","organisme":"","commentaire":""},{"row":16,"fid":"F20","start":"2027-02-22","end":"2027-02-23","horaires":"9h00 – 17h00","lieu":"Val-de-Marne (94)","modalite":"Présentiel","places":10,"statut":"Ouverte","organisme":"","commentaire":""},{"row":17,"fid":"F10","start":"2027-03-02","end":"","horaires":"9h00 – 17h00","lieu":"À distance (Teams)","modalite":"Distanciel","places":12,"statut":"Ouverte","organisme":"AD VENIR","commentaire":""},{"row":18,"fid":"F18","start":"2027-03-08","end":"2027-03-09","horaires":"9h00 – 17h00","lieu":"Vaucluse (84)","modalite":"Présentiel","places":10,"statut":"Ouverte","organisme":"","commentaire":""},{"row":19,"fid":"F03","start":"2027-03-15","end":"2027-03-16","horaires":"9h00 – 17h00","lieu":"Bouches-du-Rhône (13)","modalite":"Présentiel","places":8,"statut":"Ouverte","organisme":"","commentaire":""},{"row":20,"fid":"F45","start":"2027-03-18","end":"2027-03-19","horaires":"9h00 – 17h00","lieu":"Vaucluse (84)","modalite":"Présentiel","places":8,"statut":"Ouverte","organisme":"","commentaire":""},{"row":21,"fid":"F12","start":"2026-10-15","end":"2026-10-16","horaires":"9h00 – 17h00","lieu":"Vaucluse (84)","modalite":"Présentiel","places":0,"statut":"Ouverte","organisme":"","commentaire":"Session passée : masquée automatiquement"}],"form":[{"label":"Nom et prénom","bloc":"Salarié","type":"Texte","options":"","required":"Oui","remember":"Non","help":""},{"label":"Matricule","bloc":"Salarié","type":"Texte","options":"","required":"Oui","remember":"Non","help":"Visible sur le bulletin de paie et dans l'appli"},{"label":"Métier","bloc":"Salarié","type":"Liste","options":"Intervenant(e) à domicile ; AES / AVS ; Aide-soignant(e) ; Infirmier(e) ; Coordinatrice de parcours ; Agent d'accueil ; Autre","required":"Oui","remember":"Non","help":""},{"label":"Agence de rattachement","bloc":"Salarié","type":"Texte","options":"","required":"Oui","remember":"Oui","help":""},{"label":"Demandé par (nom et prénom)","bloc":"Demande","type":"Texte","options":"","required":"Oui","remember":"Oui","help":""},{"label":"Fonction","bloc":"Demande","type":"Liste","options":"Coordinatrice de parcours ; Responsable de secteur ; Directeur / directrice de service ; Responsable d'agence ; Autre","required":"Oui","remember":"Oui","help":""},{"label":"Origine de la demande","bloc":"Demande","type":"Liste","options":"Entretien professionnel ; Besoin repéré par le manager ; Demande du salarié ; Obligation réglementaire ; Nouvel arrivant","required":"Oui","remember":"Non","help":""},{"label":"Priorité","bloc":"Demande","type":"Liste","options":"Haute ; Normale ; Basse","required":"Non","remember":"Non","help":""},{"label":"Commentaire","bloc":"Demande","type":"Texte long","options":"","required":"Non","remember":"Non","help":"Contraintes de planning, besoins particuliers…"}],"listes":{"domaines":[{"name":"Techniques d'intervention à domicile","color":"#3E5A7F"},{"name":"Savoir-être, accompagnement et relation d'aide","color":"#D2691E"},{"name":"Prévention des risques professionnels et sécurité","color":"#C0392B"},{"name":"Personnes âgées et en situation de handicap","color":"#4F7D52"},{"name":"Santé et soin","color":"#17869A"},{"name":"DPC – Soins (SSIAD / CSI)","color":"#7B4FA0"},{"name":"Management","color":"#B07D12"},{"name":"Bureautique et outils numériques","color":"#4B5BB5"},{"name":"Autres thématiques","color":"#A3466F"}],"publics":[{"name":"Intervenant à domicile","desc":"Intervenantes à domicile, AVS, AES"},{"name":"Personnel soignant","desc":"Aides-soignantes, infirmières"},{"name":"Encadrement intermédiaire","desc":"Coordinatrices de parcours, responsables de secteur"},{"name":"Support et direction","desc":"Accueil, responsables d'agence, direction, qualité"}],"formats":["Présentiel","Distanciel","Présentiel ou distanciel"]},"reglages":{"titre":"Catalogue de formation","organisation":"Amicial","accroche":"Toutes les formations ouvertes aux salariés d'Amicial, pour progresser dans son métier et prendre soin des personnes accompagnées.","commentsinscrire":"Une formation vous intéresse ? Parlez-en à votre responsable (coordinatrice de parcours ou responsable de service), par exemple lors de votre entretien professionnel. Les managers font la demande d'inscription depuis la fiche de la formation : elle part par e-mail au service RH.","contactnom":"Service RH – formation","contactemail":"","version":"V3 – septembre 2024 (version web)","emailinscriptions":"","copieccinscriptions":"","objetdelemail":"[Inscription formation]","datesfictivesdemonstration":"Oui","emailinscriptionsadresseduservicerhquirecoitlesdemandesboitepartageedepreferenceacompleteravantlamiseenligne":"","datesfictivesdemonstrationpassezanonquandlongletsessionscontientlesvraiesdatestantquecestouilesiteafficheunbandeaudatesfictives":"","laissezcontactemailvidepournepasafficherdadressesurlesite":""}};
+
+(() => {
+'use strict';
+const $ = (s, el=document) => el.querySelector(s);
+const $$ = (s, el=document) => [...el.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm = s => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+const key = s => norm(s).replace(/[^a-z0-9]/g,'');
+const slug = s => norm(s).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const STANDALONE = (() => { try { return window.self === window.top; } catch { return false; } })();
+if (!STANDALONE) $$('[data-standalone]').forEach(el => el.hidden = true);
+const pad = n => String(n).padStart(2,'0');
+const TODAY = (() => { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; })();
+const toDate = iso => new Date(iso + 'T12:00:00Z');
+const fmtD = (iso, o) => toDate(iso).toLocaleDateString('fr-FR', {timeZone:'UTC', ...o});
+
+/* ---------- Icônes */
+const P = {
+  home:'<path d="M3.5 11.5 12 4.5l8.5 7"/><path d="M6 10v9.5h12V10"/><path d="M10 19.5v-5h4v5"/>',
+  heart:'<path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z"/>',
+  talk:'<path d="M4 5h16v11H9l-5 4z"/><path d="M12 13.3s-3-1.8-3-4a1.6 1.6 0 0 1 3-.8 1.6 1.6 0 0 1 3 .8c0 2.2-3 4-3 4z"/>',
+  shield:'<path d="M12 3 5 6v5.5c0 4.3 3 7.7 7 9.5 4-1.8 7-5.2 7-9.5V6z"/><path d="m9 12 2.2 2.2L15.5 10"/>',
+  person:'<circle cx="11" cy="4.8" r="2"/><path d="M11 8.5v6.5l-2.5 5.5M11 15l2.5 5.5M7.5 11.5h7"/><path d="M17 12.5c1 0 1.5.6 1.5 1.5v6.5"/>',
+  pulse:'<path d="M3 12h4l2-5 4 10 2-5h6"/>',
+  stetho:'<path d="M6 3v6a4 4 0 0 0 8 0V3"/><path d="M10 13v2a5 5 0 0 0 10 0v-1.5"/><circle cx="20" cy="11.5" r="2"/>',
+  users:'<circle cx="9" cy="8" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><circle cx="17" cy="9" r="2.4"/><path d="M15.6 14.1A4.5 4.5 0 0 1 21 18.5"/>',
+  laptop:'<rect x="4" y="5" width="16" height="11" rx="1.5"/><path d="M2 19h20"/>',
+  book:'<path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11"/>',
+  plus:'<circle cx="12" cy="12" r="8.5"/><path d="M12 8v8M8 12h8"/>',
+  building:'<rect x="5" y="3" width="14" height="18" rx="1.2"/><path d="M9 7h1m4 0h1M9 11h1m4 0h1M9 15h1m4 0h1M10.5 21v-3h3v3"/>',
+  pin:'<path d="M12 21s-6.5-5.6-6.5-10.5a6.5 6.5 0 0 1 13 0C18.5 15.4 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.2"/>',
+  screen:'<rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M8 20h8M12 16v4"/>',
+  either:'<rect x="2.5" y="5" width="11" height="8" rx="1"/><path d="M5 16h6"/><path d="M18 20s-3.5-3-3.5-5.6a3.5 3.5 0 0 1 7 0C21.5 17 18 20 18 20z"/>',
+  link:'<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+  x:'<path d="M6 6l12 12M18 6 6 18"/>',
+  target:'<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".8"/>',
+  list:'<path d="M9 6h11M9 12h11M9 18h11"/><path d="M4.5 6h.01M4.5 12h.01M4.5 18h.01"/>',
+  print:'<path d="M7 9V3h10v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/>',
+  arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+  clock:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+  cal:'<rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+  mail:'<path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/>',
+  copy:'<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/>',
+  check:'<path d="m5 12.5 4.5 4.5L19 7.5"/>'
+};
+const ic = (n, cls='i') => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true">${P[n]||P.book}</svg>`;
+const DOM_COLORS = ['#3E5A7F','#D2691E','#C0392B','#4F7D52','#17869A','#7B4FA0','#B07D12','#4B5BB5','#A3466F','#5E6B78','#2E7D5B'];
+function domIcon(name){ const n=norm(name);
+  if(n.includes('dpc')) return 'stetho';
+  if(n.includes('intervention')) return 'home';
+  if(n.includes('savoir')||n.includes('relation')) return 'talk';
+  if(n.includes('prevention')||n.includes('securite')) return 'shield';
+  if(n.includes('agee')||n.includes('handicap')) return 'person';
+  if(n.includes('sante')||n.includes('soin')) return 'pulse';
+  if(n.includes('manag')) return 'users';
+  if(n.includes('numerique')||n.includes('bureautique')||n.includes('logiciel')) return 'laptop';
+  return 'book'; }
+function pubIcon(name){ const n=norm(name);
+  if(n.includes('intervenant')||n.includes('domicile')) return 'home';
+  if(n.includes('soign')||n.includes('infirm')) return 'plus';
+  if(n.includes('encadr')||n.includes('coordin')) return 'users';
+  if(n.includes('support')||n.includes('direction')) return 'building';
+  return 'users'; }
+
+/* ---------- Lecture du classeur */
+const ALIAS = {
+  id:['id','code','ref','reference'], titre:['titre','intitule','formation','nom'], statut:['statut','etat'],
+  publics:['publics','publiccible','publicscibles','cible'], publicDetail:['publicdetaille','publicprecis','publicvise','publicdetail'],
+  domaine:['domaine','domainedeformation','thematique','theme'], format:['format','modalite','modalites'],
+  precision:['precisionsformat','precisionformat','precisions','precision'], territoire:['territoire','departement','zone'],
+  duree:['duree'], prerequis:['prerequis','prerequi'], requis:['formationrequiseid','formationrequise','requis','prerequisid'],
+  organismes:['organismes','organisme','organismesdeformation'], objectifs:['objectifs','objectifspedagogiques'],
+  programme:['programme','contenu'], motscles:['motscles','motcles','motscle','synonymes'], nouveau:['nouveau','nouveaute']
+};
+const S_ALIAS = { fid:['formationid','formation','id','idformation','ref'], start:['datededebut','debut','date','datedebut'], end:['datedefin','fin','datefin'],
+  horaires:['horaires','horaire','heures'], lieu:['lieu','adresse','ville'], modalite:['modalite','format'], places:['placesrestantes','places','placesdisponibles'],
+  statut:['statut','etat'], organisme:['organisme','formateur','intervenant'], commentaire:['commentaire','remarque','note'] };
+const F_ALIAS = { label:['champ','libelle','nom'], bloc:['bloc','partie'], type:['type'], options:['options','choix'],
+  required:['obligatoire','requis'], remember:['memoriser','memoire','retenir'], help:['textedaide','aide'] };
+const mkIdx = A => { const o={}; for (const [f,arr] of Object.entries(A)) arr.forEach(a => o[a]=f); return o; };
+const ALIAS_IDX = mkIdx(ALIAS), S_IDX = mkIdx(S_ALIAS), F_IDX = mkIdx(F_ALIAS);
+const mapHead = (row, I) => (row||[]).map(h => { const k = key(h); if (!k) return null; if (I[k]) return I[k]; const a = Object.keys(I).filter(a => k.startsWith(a)).sort((x,y) => y.length-x.length)[0]; return a ? I[a] : null; });
+
+function linesOf(v){ return String(v ?? '').replace(/\r/g,'').split('\n').map(s => s.trim()).filter(Boolean); }
+function parseObjectifs(v){ return linesOf(v).map(l => l.replace(/^(O\s*\d+\s*[-–:.)]?\s*|[•\-–]\s*)/i,'').trim()).filter(Boolean); }
+function parseProgramme(v){
+  const out = [];
+  for (const l of linesOf(v)) {
+    const sub = /^[-–—]\s*/.test(l);
+    const t = l.replace(/^([-–—•●▪]\s*)/,'').trim(); if (!t) continue;
+    if (sub && out.length) out[out.length-1].subs.push(t); else out.push({t, subs:[]});
+  }
+  return out;
+}
+function parseDuree(v){
+  const s = String(v ?? '').trim();
+  const m = s.match(/(\d+(?:[.,]\d+)?)\s*h/i);
+  const pm = s.match(/^([^()]*)\((.*)\)\s*$/);
+  return { hours: m ? parseFloat(m[1].replace(',','.')) : null, main: (pm ? pm[1] : s).trim(), detail: pm ? pm[2].trim() : '' };
+}
+function parseDate(v){
+  if (v instanceof Date && !isNaN(v)) return `${v.getUTCFullYear()}-${pad(v.getUTCMonth()+1)}-${pad(v.getUTCDate())}`;
+  if (typeof v === 'number' && v > 20000) { const d = new Date(Date.UTC(1899,11,30) + Math.round(v)*864e5); return `${d.getUTCFullYear()}-${pad(d.getUTCMonth()+1)}-${pad(d.getUTCDate())}`; }
+  const s = String(v ?? '').trim(); if (!s) return '';
+  let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/); if (m) return `${m[1]}-${pad(m[2])}-${pad(m[3])}`;
+  m = s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})$/); if (m) return `${m[3].length===2?'20'+m[3]:m[3]}-${pad(m[2])}-${pad(m[1])}`;
+  return null;
+}
+function fmtKind(v){ const n=norm(v); const p=n.includes('present'), d=n.includes('distan')||n.includes('visio')||n.includes('ligne'); return p&&d?'both':d?'d':'p'; }
+function statusKind(v){ const n=norm(v); if(!n||n.startsWith('pub')||n.startsWith('oui')) return 'pub'; if(n.startsWith('arch')) return 'arch'; return 'draft'; }
+const yes = v => /^(oui|o|x|yes|y|1|vrai|true)$/i.test(String(v ?? '').trim());
+function sheetByName(wb, ...names){ const ks = names.map(key); const n = wb.SheetNames.find(s => ks.includes(key(s))); return n ? wb.Sheets[n] : null; }
+function rowsOf(ws, raw){ return XLSX.utils.sheet_to_json(ws, {header:1, defval:'', raw:!!raw}); }
+
+function parseWorkbook(wb){
+  let ws = sheetByName(wb,'Formations','Catalogue');
+  if (!ws) ws = wb.Sheets[wb.SheetNames.find(n => (rowsOf(wb.Sheets[n])[0] || []).some(h => key(h)==='titre'))];
+  if (!ws) throw new Error("Aucun onglet « Formations » avec une colonne « Titre » n'a été trouvé.");
+  const rows = rowsOf(ws);
+  const head = mapHead(rows[0], ALIAS_IDX);
+  if (!head.includes('titre')) throw new Error("La colonne « Titre » est introuvable dans l'onglet Formations.");
+  const items = [];
+  rows.slice(1).forEach((r, i) => { const o = {}; head.forEach((f, j) => { if (f && o[f] === undefined) o[f] = String(r[j] ?? '').trim(); }); if (o.titre) items.push({ row:i+2, ...o }); });
+  return { items, sessions:parseSessions(wb), form:parseForm(wb), listes:parseListes(wb), reglages:parseReglages(wb) };
+}
+function parseSessions(wb){
+  const ws = sheetByName(wb,'Sessions','Calendrier'); if (!ws) return null;
+  const rows = rowsOf(ws, true); const head = mapHead(rows[0], S_IDX); const out = [];
+  rows.slice(1).forEach((r, i) => { const o = {row:i+2}; head.forEach((f, j) => { if (f && o[f] === undefined) o[f] = r[j]; });
+    const fid = String(o.fid ?? '').trim(); if (!fid || fid.length > 20) return; out.push(o); });
+  return out;
+}
+function parseForm(wb){
+  const ws = sheetByName(wb,'Inscription','Formulaire'); if (!ws) return null;
+  const rows = rowsOf(ws); const head = mapHead(rows[0], F_IDX); const out = [];
+  for (const r of rows.slice(1)) { const o = {}; head.forEach((f, j) => { if (f && o[f] === undefined) o[f] = String(r[j] ?? '').trim(); });
+    if (!o.label || (!o.bloc && !o.type)) break; out.push(o); }
+  return out;
+}
+function parseListes(wb){
+  const ws = sheetByName(wb,'Listes'); const res = { domaines:[], publics:[], formats:[] }; if (!ws) return res;
+  const rows = rowsOf(ws); const h = (rows[0]||[]).map(key); const col = p => h.findIndex(p);
+  const cD = col(k => k.startsWith('domaine')||k.startsWith('thematique')), cC = col(k => k.startsWith('couleur')), cP = col(k => k==='publics' || k==='public'), cPd = col(k => k.startsWith('description')), cF = col(k => k.startsWith('format'));
+  const take = (c, c2) => { const out=[]; if (c<0) return out; for (let i=1;i<rows.length;i++){ const v=String(rows[i][c]??'').trim(); if(!v) break; out.push({name:v, x:c2!=null&&c2>=0 ? String(rows[i][c2]??'').trim() : ''}); } return out; };
+  res.domaines = take(cD, cC).map(d => ({name:d.name, color:/^#?[0-9a-f]{6}$/i.test(d.x) ? (d.x[0]==='#'?d.x:'#'+d.x) : ''}));
+  res.publics = take(cP, cPd).map(p => ({name:p.name, desc:p.x})); res.formats = take(cF).map(f => f.name);
+  return res;
+}
+function parseReglages(wb){
+  const ws = sheetByName(wb,'Réglages','Reglages','Parametres'); const res = {}; if (!ws) return res;
+  rowsOf(ws).slice(1).forEach(r => { const k = key(r[0]); if (k && res[k] === undefined) res[k] = String(r[1] ?? '').trim(); });
+  return res;
+}
+const DEFAULT_FORM = [
+  {label:'Nom et prénom', bloc:'Salarié', type:'Texte', required:'Oui'}, {label:'Matricule', bloc:'Salarié', type:'Texte', required:'Oui'},
+  {label:'Agence de rattachement', bloc:'Salarié', type:'Texte', required:'Oui', remember:'Oui'},
+  {label:'Demandé par (nom et prénom)', bloc:'Demande', type:'Texte', required:'Oui', remember:'Oui'}, {label:'Commentaire', bloc:'Demande', type:'Texte long'}];
+
+/* ---------- Normalisation et contrôles */
+function build(raw){
+  const W = [];
+  const L = raw.listes || {domaines:[],publics:[],formats:[]};
+  const domDefs = (L.domaines||[]).map(d => typeof d === 'string' ? {name:d, color:''} : {...d});
+  const pubDefs = (L.publics||[]).map(p => typeof p === 'string' ? {name:p, desc:''} : {...p});
+  const seen = new Map();
+  const items = raw.items.map((o, k) => {
+    let id = (o.id||'').toUpperCase().replace(/\s+/g,'');
+    const where = `Formations, ligne ${o.row||k+2} (${o.titre.slice(0,44)}${o.titre.length>44?'…':''})`;
+    if (!id) { id = 'L' + (o.row||k+2); W.push([where, "pas d'ID : un code provisoire est utilisé, les liens vers cette fiche ne seront pas stables."]); }
+    if (seen.has(id)) { W.push([where, `ID ${id} déjà utilisé ligne ${seen.get(id)}.`]); id = id + '-' + (o.row||k+2); }
+    seen.set(id, o.row||k+2);
+    const dom = o.domaine || 'Autres thématiques';
+    if (!o.domaine) W.push([where, 'thématique vide (classée dans « Autres thématiques »).']);
+    else if (domDefs.length && !domDefs.some(d => key(d.name) === key(dom))) W.push([where, `thématique « ${dom} » absente de l'onglet Listes.`]);
+    if (!domDefs.some(d => key(d.name) === key(dom))) domDefs.push({name:dom, color:''});
+    const pubs = (o.publics||'').split(/[;\n]/).map(s => s.trim()).filter(Boolean).map(p => { const m = pubDefs.find(d => key(d.name) === key(p)); return m ? m.name : p; });
+    if (!pubs.length) W.push([where, "aucun public : la formation n'apparaîtra dans aucun filtre « Pour quel public ? »."]);
+    pubs.forEach(p => { if (!pubDefs.some(d => key(d.name) === key(p))) { W.push([where, `public « ${p} » absent de l'onglet Listes.`]); pubDefs.push({name:p, desc:''}); } });
+    const d = parseDuree(o.duree);
+    if (!o.duree) W.push([where, 'durée vide.']); else if (d.hours == null) W.push([where, `durée « ${o.duree} » sans nombre d'heures : exclue des filtres de durée.`]);
+    const objectifs = parseObjectifs(o.objectifs), programme = parseProgramme(o.programme), status = statusKind(o.statut);
+    if (status==='pub' && !objectifs.length) W.push([where, 'aucun objectif pédagogique.']);
+    if (status==='pub' && !programme.length) W.push([where, 'programme vide.']);
+    return { id, titre:o.titre, status, publics:pubs, publicDetail:(o.publicDetail||'').split(/\s*;\s*/).filter(Boolean).join(' · '),
+      domaine:dom, format:o.format || 'Présentiel', fmt:fmtKind(o.format||'Présentiel'), precision:o.precision||'', territoire:o.territoire||'',
+      duree:d, prerequis:o.prerequis||'', requis:(o.requis||'').toUpperCase().replace(/\s+/g,''), organismes:(o.organismes||'').split(/\s*;\s*/).filter(Boolean).join(' · '),
+      objectifs, programme, motscles:o.motscles||'', nouveau:yes(o.nouveau), sessions:[], row:o.row };
+  });
+  const byId = new Map(items.map(i => [i.id, i]));
+  items.forEach(i => { if (i.requis && !byId.has(i.requis)) W.push([`Formations, ${i.id}`, `formation requise « ${i.requis} » introuvable.`]); });
+  const domMap = new Map(domDefs.map((d, k) => [key(d.name), {name:d.name, color:d.color || DOM_COLORS[k % DOM_COLORS.length], icon:domIcon(d.name)}]));
+  items.forEach(i => { const dm = domMap.get(key(i.domaine)); i.dom = dm; i.domaine = dm.name; });
+
+  /* Sessions */
+  const sessions = [];
+  (raw.sessions || []).forEach((s, k) => {
+    const where = `Sessions, ligne ${s.row||k+2}`;
+    const fid = String(s.fid ?? '').toUpperCase().replace(/\s+/g,''); const f = byId.get(fid);
+    if (!f) { W.push([where, `formation « ${s.fid} » introuvable dans l'onglet Formations.`]); return; }
+    const start = parseDate(s.start), end = parseDate(s.end);
+    if (!start) { W.push([where, `date de début « ${s.start ?? ''} » manquante ou illisible (format attendu : jj/mm/aaaa).`]); return; }
+    if (end === null) W.push([where, `date de fin « ${s.end} » illisible.`]);
+    else if (end && end < start) W.push([where, 'date de fin antérieure à la date de début.']);
+    const st = norm(s.statut); const statut = st.startsWith('annul') ? 'annulee' : st.startsWith('compl') ? 'complete' : 'ouverte';
+    const placesN = String(s.places ?? '').trim() === '' ? null : Number(String(s.places).replace(',','.'));
+    sessions.push({ k:sessions.length, fid, f, start, end:(end && end > start) ? end : '', horaires:String(s.horaires??'').trim(), lieu:String(s.lieu??'').trim(),
+      modalite:String(s.modalite??'').trim(), places:Number.isFinite(placesN) ? placesN : null, statut:(statut==='ouverte' && placesN===0) ? 'complete' : statut,
+      organisme:String(s.organisme??'').trim(), commentaire:String(s.commentaire??'').trim() });
+  });
+  const upcoming = sessions.filter(s => s.statut !== 'annulee' && (s.end || s.start) >= TODAY).sort((a,b) => a.start.localeCompare(b.start));
+  upcoming.forEach(s => s.f.sessions.push(s));
+  const sessById = new Map(sessions.map(s => [s.k, s]));
+
+  /* Formulaire */
+  const formRaw = (raw.form && raw.form.length) ? raw.form : DEFAULT_FORM;
+  const form = formRaw.map((f, k) => ({ k, label:f.label, key:(key(f.label) || 'champ') + k, bloc:norm(f.bloc).startsWith('sal') ? 'sal' : 'dem',
+    type:(t => t.includes('long')?'long':t.startsWith('liste')||t.startsWith('choix')?'list':t.startsWith('date')?'date':t.startsWith('nombre')?'num':t.startsWith('oui')?'yn':'text')(norm(f.type)),
+    options:String(f.options||'').split(/\s*;\s*/).filter(Boolean), required:yes(f.required), remember:yes(f.remember), help:f.help||'' }));
+  form.filter(f => f.type==='list' && !f.options.length).forEach(f => W.push([`Inscription, champ « ${f.label} »`, 'type Liste sans options : il sera affiché comme un champ texte.']));
+
+  const published = items.filter(i => i.status === 'pub');
+  const pubSet = new Set(published.flatMap(i => i.publics));
+  const personas = pubDefs.filter(p => pubSet.has(p.name)).map(p => ({...p, slug:slug(p.name), icon:pubIcon(p.name)}));
+  const domSet = new Set(published.map(i => i.domaine));
+  const domaines = [...domMap.values()].filter(d => domSet.has(d.name));
+  items.forEach(i => { i.hay = norm([i.titre, i.publicDetail, i.domaine, i.objectifs.join(' '), i.programme.map(p => p.t + ' ' + p.subs.join(' ')).join(' '), i.organismes, i.motscles, i.prerequis, i.id].join(' ')); });
+  const R = raw.reglages || {};
+  return { items, byId, published, personas, domaines, sessions:upcoming.filter(s => s.f.status==='pub'), sessById, hasSessions: raw.sessions != null, form, warn:W,
+    counts:{ pub:published.length, draft:items.filter(i=>i.status==='draft').length, arch:items.filter(i=>i.status==='arch').length, sess:upcoming.length, fields:form.length },
+    settings:{ titre:R.titre||'Catalogue de formation', organisation:R.organisation||'Amicial', accroche:R.accroche||'', inscription:R.commentsinscrire||R.inscription||'',
+      contactNom:R.contactnom||'', contactEmail:R.contactemail||'', version:R.version||'', mailTo:(R.emailinscriptions||'').replace(/\s*[;,]\s*/g,','),
+      mailCc:(R.copieccinscriptions||'').replace(/\s*[;,]\s*/g,','), subject:R.objetdelemail||'[Inscription formation]', demo:yes(R.datesfictivesdemonstration) } };
+}
+
+/* ---------- État */
+const S = { view:'cat', q:'', persona:'', dom:'', fmt:'', dur:'', sel:new Set(), source:'', data:null, live:null };
+const LS = { get(k, d){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } }, set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
+LS.get('amicial-catalogue-selection', []).forEach(id => S.sel.add(id));
+const saveSel = () => LS.set('amicial-catalogue-selection', [...S.sel]);
+
+/* ---------- Rendu commun */
+function daysHTML(h){
+  if (h == null || h > 28) return '';
+  const r = Math.max(.5, Math.round(h/3.5)/2), full = Math.floor(r), half = r - full >= .5;
+  return `<span class="days" aria-hidden="true">${'<i></i>'.repeat(full)}${half?'<i class="h"></i>':''}</span>`;
+}
+const fmtLabel = i => i.fmt==='both' ? 'Présentiel ou distanciel' : i.fmt==='d' ? 'Distanciel' : 'Présentiel';
+const fmtIcon = i => i.fmt==='both' ? 'either' : i.fmt==='d' ? 'screen' : 'pin';
+function sessRange(s, short){
+  if (!s.end) return fmtD(s.start, short ? {day:'numeric', month:'short'} : {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+  const a = toDate(s.start), b = toDate(s.end);
+  if (a.getUTCMonth()===b.getUTCMonth() && a.getUTCFullYear()===b.getUTCFullYear()) return `${a.getUTCDate()} → ${fmtD(s.end, short?{day:'numeric', month:'short'}:{day:'numeric', month:'long', year:'numeric'})}`;
+  return `${fmtD(s.start,{day:'numeric', month:'short'})} → ${fmtD(s.end, short?{day:'numeric', month:'short'}:{day:'numeric', month:'short', year:'numeric'})}`;
+}
+function sessLabel(s){ return `${sessRange(s)}${s.lieu?' · '+s.lieu:''}${s.statut==='complete'?' · complète':s.places!=null?` · ${s.places} place${s.places>1?'s':''}`:''}`; }
+function placesPill(s){ return s.statut==='complete' ? `<span class="pill full">Complète</span>` : s.places!=null ? `<span class="pill next">${s.places} place${s.places>1?'s':''}</span>` : ''; }
+function hl(text){
+  const words = norm(S.q).split(/\s+/).filter(w => w.length > 1); if (!words.length) return esc(text);
+  const n = norm(text); const marks = new Array(text.length).fill(false);
+  words.forEach(w => { let p = n.indexOf(w); while (p >= 0) { for (let k=p;k<p+w.length;k++) marks[k]=true; p = n.indexOf(w, p+1); } });
+  let out='', open=false; for (let k=0;k<text.length;k++){ if(marks[k]&&!open){out+='<mark>';open=true;} if(!marks[k]&&open){out+='</mark>';open=false;} out+=esc(text[k]); } if(open) out+='</mark>'; return out;
+}
+function matches(i, skip){
+  const D = S.data;
+  if (S.persona && skip!=='persona') { const p = D.personas.find(x => x.slug===S.persona); if (p && !i.publics.includes(p.name)) return false; }
+  if (S.dom && skip!=='dom' && slug(i.domaine)!==S.dom) return false;
+  if (S.fmt && skip!=='fmt') { if (S.fmt==='p' && i.fmt==='d') return false; if (S.fmt==='d' && i.fmt==='p') return false; }
+  if (S.dur && skip!=='dur') { const h = i.duree.hours; if (h==null) return false; if (S.dur==='1' && h>7) return false; if (S.dur==='2' && (h<=7||h>14)) return false; if (S.dur==='3' && h<=14) return false; }
+  if (S.q) { const ws = norm(S.q).split(/\s+/).filter(Boolean); if (!ws.every(w => i.hay.includes(w))) return false; }
+  return true;
+}
+const sessMatches = (s, skip) => matches(s.f, skip) && !(S.fmt==='p' && norm(s.modalite).includes('distan')) && !(S.fmt==='d' && norm(s.modalite).includes('present'));
+
+function cardHTML(i, k){
+  const on = S.sel.has(i.id), req = i.requis && S.data.byId.get(i.requis), nx = i.sessions[0];
+  return `<article class="card dc" style="--dc:${i.dom.color};--i:${Math.min(k,14)}">
+    <div class="card-head">
+      <span class="drop sm solid" aria-hidden="true">${ic(i.dom.icon)}</span>
+      <span class="card-dom">${esc(i.domaine)}</span>
+      <button class="heart" type="button" data-heart="${esc(i.id)}" aria-pressed="${on}" aria-label="${on?'Retirer':'Ajouter'} « ${esc(i.titre)} » ${on?'de':'à'} ma sélection">${ic('heart')}</button>
+    </div>
+    <div class="card-body">
+      <h3><button type="button" data-open="${esc(i.id)}">${hl(i.titre)}</button></h3>
+      ${i.publicDetail ? `<p class="card-pub">${esc(i.publicDetail)}</p>` : ''}
+      <div class="card-meta">
+        <span class="pill">${ic(fmtIcon(i))}${fmtLabel(i)}</span>
+        ${i.duree.main ? `<span class="pill" title="${esc(i.duree.main + (i.duree.detail?' – '+i.duree.detail:''))}">${daysHTML(i.duree.hours)}${esc(i.duree.main)}</span>` : ''}
+        ${nx ? `<span class="pill next" title="Prochaine session">${ic('cal')}${esc(sessRange(nx, true))}${i.sessions.length>1?` · +${i.sessions.length-1}`:''}</span>` : ''}
+        ${i.territoire ? `<span class="pill terr">${ic('pin')}${esc(i.territoire)}</span>` : ''}
+        ${req ? `<span class="pill req">${ic('link')}Suite de parcours</span>` : ''}
+        ${i.nouveau ? `<span class="pill new">Nouveau</span>` : ''}
+      </div>
+    </div>
+  </article>`;
+}
+function renderChips(){
+  const D = S.data, cal = S.view==='cal';
+  const base = cal ? D.sessions.filter(s => sessMatches(s,'dom')) : D.published.filter(i => matches(i,'dom'));
+  const of = d => cal ? base.filter(s => s.f.domaine===d.name).length : base.filter(i => i.domaine===d.name).length;
+  $('#domChips').innerHTML = `<button type="button" class="chip" data-dom="" aria-pressed="${!S.dom}"><span class="dot"></span>Toutes les thématiques <span class="k">${base.length}</span></button>` +
+    D.domaines.map(d => { const n = of(d), s = slug(d.name);
+      return `<button type="button" class="chip dc${n?'':' zero'}" style="--dc:${d.color}" data-dom="${s}" aria-pressed="${S.dom===s}"><span class="dot"></span>${esc(d.name)} <span class="k">${n}</span></button>`; }).join('');
+}
+function render(){
+  const D = S.data;
+  renderChips();
+  $$('#personaGrid .persona').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.p===S.persona)));
+  $$('#fmtSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v===S.fmt)));
+  $$('#durSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v===S.dur)));
+  $$('.views button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view===S.view)));
+  $('#demoBanner').hidden = !(S.view==='cal' && D.settings.demo && D.sessions.length);
+  const active = S.q||S.persona||S.dom||S.fmt||S.dur;
+  $('#resetBtn').hidden = !active;
+  if (S.view === 'cal') return renderCalendar(active);
+  const list = D.published.filter(i => matches(i));
+  $('#resultCount').innerHTML = `<b>${list.length}</b> formation${list.length>1?'s':''}${active?' sur '+D.published.length:''}`;
+  if (!list.length) { $('#results').innerHTML = `<div class="empty"><b>Aucune formation ne correspond.</b>Essayez un autre mot ou <button type="button" class="link-btn" data-reset>effacez les filtres</button>.</div>`; return; }
+  let k = 0;
+  $('#results').innerHTML = D.domaines.map(d => {
+    const g = list.filter(i => i.domaine===d.name); if (!g.length) return '';
+    return `<section class="group" aria-labelledby="g-${slug(d.name)}">
+      <div class="group-h dc" style="--dc:${d.color}"><span class="drop solid" aria-hidden="true">${ic(d.icon)}</span><h2 id="g-${slug(d.name)}">${esc(d.name)}</h2><span class="k">${g.length}</span></div>
+      <div class="grid">${g.map(i => cardHTML(i, k++)).join('')}</div></section>`;
+  }).join('');
+}
+function renderCalendar(active){
+  const D = S.data;
+  if (!D.hasSessions) { $('#resultCount').innerHTML=''; $('#results').innerHTML = `<div class="empty"><b>Le calendrier n'est pas encore alimenté.</b>Ajoutez un onglet « Sessions » dans catalogue.xlsx pour afficher les dates.</div>`; return; }
+  const list = D.sessions.filter(s => sessMatches(s));
+  $('#resultCount').innerHTML = `<b>${list.length}</b> session${list.length>1?'s':''} à venir${active?' sur '+D.sessions.length:''}`;
+  if (!list.length) { $('#results').innerHTML = `<div class="empty"><b>Aucune session programmée pour ces critères.</b>Ouvrez une fiche formation pour faire une demande : le service RH vous recontactera. <button type="button" class="link-btn" data-reset>Effacer les filtres</button></div>`; return; }
+  const months = []; list.forEach(s => { const m = s.start.slice(0,7); let g = months.find(x => x.m===m); if (!g) months.push(g = {m, items:[]}); g.items.push(s); });
+  const mName = (m, o) => toDate(m+'-01').toLocaleDateString('fr-FR', {timeZone:'UTC', month:o||'long', year:'numeric'});
+  $('#results').innerHTML = `<div class="cal-top"><span class="eyebrow">Aller à</span>${months.map(g => `<a class="month-chip" href="#m-${g.m}" data-month="${g.m}">${esc(mName(g.m,'short'))} <span>${g.items.length}</span></a>`).join('')}</div>` +
+    months.map(g => `<section class="month" id="m-${g.m}"><h2>${esc(mName(g.m))}</h2><div class="sess-list">${g.items.map(s => {
+      const i = s.f, d = toDate(s.start);
+      return `<article class="sess dc" style="--dc:${i.dom.color}">
+        <div class="sess-date" aria-hidden="true"><small>${esc(fmtD(s.start,{weekday:'short'}).replace('.',''))}</small><b>${d.getUTCDate()}</b><span>${esc(fmtD(s.start,{month:'short'}))}</span></div>
+        <div class="sess-main"><span class="sess-dom">${esc(i.domaine)}</span><button type="button" data-open="${esc(i.id)}">${hl(i.titre)}</button>
+          <div class="sess-meta"><span>${ic('cal')}${esc(sessRange(s))}</span>${s.horaires?`<span>${ic('clock')}${esc(s.horaires)}</span>`:''}${s.lieu?`<span>${ic(norm(s.modalite).includes('distan')?'screen':'pin')}${esc(s.lieu)}</span>`:''}${s.organisme?`<span>${esc(s.organisme)}</span>`:''}</div></div>
+        <div class="sess-side">${placesPill(s)}<button type="button" class="btn primary sm" data-inscrire="${esc(i.id)}" data-session="${s.k}" ${s.statut==='complete'?'disabled':''}>${ic('mail')}Inscrire</button></div>
+      </article>`; }).join('')}</div></section>`).join('') +
+    `<p class="cal-note">Pas de session pour une formation qui vous intéresse ? Ouvrez sa fiche et faites une demande : le service RH vous recontactera.</p>`;
+}
+function renderStatic(){
+  const D = S.data, st = D.settings;
+  document.title = `${st.titre} ${st.organisation}`.trim();
+  $('#brandTitle').textContent = st.titre;
+  $('#brandVersion').textContent = st.version ? `${st.organisation} · ${st.version}` : st.organisation;
+  $('#heroTitle').textContent = st.titre;
+  $('#heroEyebrow').textContent = `Formation continue · ${st.organisation}`;
+  $('#heroLead').textContent = st.accroche; $('#heroLead').hidden = !st.accroche;
+  const P_ = D.published, nd = P_.filter(i => i.fmt!=='p').length, np = P_.filter(i => i.fmt!=='d').length;
+  $('#stats').innerHTML = `<span><b>${P_.length}</b> formations</span><span><b>${D.domaines.length}</b> thématiques</span><span><b>${np}</b> en présentiel</span><span><b>${nd}</b> à distance</span>${D.sessions.length?`<span><b>${D.sessions.length}</b> sessions à venir</span>`:''}`;
+  $('#calCount').textContent = D.sessions.length; $('#calTab').hidden = !D.hasSessions;
+  $('#personaGrid').innerHTML = D.personas.map(p => { const n = P_.filter(i => i.publics.includes(p.name)).length;
+    return `<button type="button" class="persona" data-p="${p.slug}" aria-pressed="false"><span class="drop" aria-hidden="true">${ic(p.icon)}</span><b>${esc(p.name)}</b>${p.desc?`<small>${esc(p.desc)}</small>`:''}<span class="n">${n} formation${n>1?'s':''}</span></button>`; }).join('');
+  $('#howtoText').textContent = st.inscription || "Parlez-en à votre responsable.";
+  $('#contactBox').innerHTML = st.contactNom || st.contactEmail ? `<span>Contact : <b>${esc(st.contactNom)}</b></span>${st.contactEmail?` <span style="user-select:all">${esc(st.contactEmail)}</span><button type="button" class="copy-btn" data-copy="${esc(st.contactEmail)}">Copier l'adresse</button>`:''}` : '';
+  $('#footVersion').textContent = st.version ? `Catalogue ${st.version}` : '';
+  $('#footSource').textContent = S.source;
+}
+
+/* ---------- Fiche */
+let lastFocus = null;
+function openFiche(id, fromHash){
+  const i = S.data.byId.get(id); if (!i) return;
+  const on = S.sel.has(i.id), req = i.requis && S.data.byId.get(i.requis);
+  const next = S.data.items.filter(x => x.requis === i.id && x.status==='pub');
+  const dlg = $('#ficheDlg');
+  dlg.classList.add('dc'); dlg.style.setProperty('--dc', i.dom.color);
+  $('#ficheIn').innerHTML = `
+    <div class="sheet-head dc" style="--dc:${i.dom.color}">
+      <div class="row"><span class="drop solid" aria-hidden="true">${ic(i.dom.icon)}</span><span class="dom">${esc(i.domaine)}</span></div>
+      <h2 id="ficheTitle">${esc(i.titre)}</h2>
+      <div class="id">Réf. ${esc(i.id)}${i.status!=='pub'?' · '+(i.status==='draft'?'Brouillon':'Archivée'):''}${i.nouveau?' · Nouveau':''}</div>
+      <button class="x" type="button" data-close aria-label="Fermer la fiche">${ic('x')}</button>
+    </div>
+    <div class="sheet-body">
+      <dl class="facts">
+        <div class="wide"><dt>Public</dt><dd>${esc(i.publicDetail || i.publics.join(' · '))}</dd></div>
+        <div><dt>Format</dt><dd>${esc(i.format)}${i.precision?`<small>${esc(i.precision)}</small>`:''}</dd></div>
+        <div><dt>Durée</dt><dd>${daysHTML(i.duree.hours)} ${esc(i.duree.main||'—')}${i.duree.detail?`<small>${esc(i.duree.detail)}</small>`:''}</dd></div>
+        <div class="wide"><dt>Prérequis</dt><dd>${esc(i.prerequis||'Aucun')}</dd></div>
+        ${i.organismes?`<div class="wide"><dt>Organismes de formation</dt><dd>${esc(i.organismes)}</dd></div>`:''}
+        ${i.territoire?`<div class="wide"><dt>Territoire</dt><dd>${esc(i.territoire)}</dd></div>`:''}
+      </dl>
+      ${req||next.length ? `<div class="parcours"><span class="eyebrow">Parcours</span>
+        ${req?`<button type="button" data-open="${esc(req.id)}"><span class="tag">AVANT</span>${ic('arrow')}<span>${esc(req.titre)}</span></button>`:''}
+        ${next.map(n => `<button type="button" data-open="${esc(n.id)}"><span class="tag">ENSUITE</span>${ic('arrow')}<span>${esc(n.titre)}</span></button>`).join('')}
+      </div>` : ''}
+      ${S.data.hasSessions ? `<div class="sec"><h3>${ic('cal')}Prochaines sessions</h3>${i.sessions.length ? `<ul class="fsess">${i.sessions.slice(0,6).map(s => { const d = toDate(s.start); return `<li>
+          <span class="mini-date" aria-hidden="true"><b>${d.getUTCDate()}</b><span>${esc(fmtD(s.start,{month:'short'}))}</span></span>
+          <span><span class="t">${esc(sessRange(s))}</span><small>${[s.horaires, s.lieu].filter(Boolean).map(esc).join(' · ')}${s.statut==='complete'?' · complète':s.places!=null?` · ${s.places} place${s.places>1?'s':''}`:''}</small></span>
+          <button type="button" class="btn sm${s.statut==='complete'?'':' primary'}" data-inscrire="${esc(i.id)}" data-session="${s.k}" ${s.statut==='complete'?'disabled':''}>Inscrire</button></li>`; }).join('')}</ul>${S.data.settings.demo?'<p class="note" style="margin:8px 0 0">Dates fictives (démonstration).</p>':''}`
+        : `<p class="nosess">Pas de session programmée pour l'instant. Faites une demande : le service RH vous proposera une date.</p>`}</div>` : ''}
+      ${i.objectifs.length ? `<div class="sec"><h3>${ic('target')}Objectifs pédagogiques</h3><ol class="objs">${i.objectifs.map((o,k) => `<li><span class="o">O${k+1}</span><span>${esc(o)}</span></li>`).join('')}</ol></div>` : ''}
+      ${i.programme.length ? `<div class="sec"><h3>${ic('list')}Programme</h3><ol class="prog">${i.programme.map(p => `<li>${esc(p.t)}${p.subs.length?`<ul>${p.subs.map(s => `<li>${esc(s)}</li>`).join('')}</ul>`:''}</li>`).join('')}</ol></div>` : ''}
+    </div>
+    <div class="sheet-actions">
+      <button type="button" class="btn primary" data-inscrire="${esc(i.id)}">${ic('mail')}Demander l'inscription</button>
+      <button type="button" class="btn" data-heart="${esc(i.id)}" aria-pressed="${on}">${ic('heart')}<span>${on?'Dans ma sélection':'Ajouter à ma sélection'}</span></button>
+      ${STANDALONE?`<button type="button" class="btn" data-copylink="${esc(i.id)}">${ic('link')}Copier le lien</button>
+      <button type="button" class="btn" data-printone="${esc(i.id)}">${ic('print')}Imprimer</button>`:''}
+    </div>`;
+  if (!dlg.open) { lastFocus = document.activeElement; dlg.showModal(); }
+  $('.sheet-body', dlg).scrollTop = 0;
+  $('[data-close]', dlg).focus();
+  if (!fromHash && location.hash !== '#'+i.id) { try { history.replaceState(null,'','#'+i.id); } catch {} }
+}
+function clearHash(){ try { history.replaceState(null,'', location.pathname + location.search + (S.view==='cal' ? '#calendrier' : S.persona ? '#'+S.persona : '')); } catch {} }
+$('#ficheDlg').addEventListener('close', () => { if (/^#[A-Z]+\d+/i.test(location.hash)) clearHash(); if (lastFocus && document.contains(lastFocus) && !$('#insDlg').open) lastFocus.focus(); });
+
+/* ---------- Sélection */
+function toggleSel(id){
+  if (S.sel.has(id)) S.sel.delete(id); else S.sel.add(id);
+  saveSel(); syncSel(); toast(S.sel.has(id) ? 'Ajoutée à votre sélection' : 'Retirée de votre sélection');
+  const b = $('#selBtn'); b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump');
+}
+function syncSel(){
+  const D = S.data; [...S.sel].forEach(id => { if (!D.byId.has(id)) S.sel.delete(id); });
+  $('#selCount').textContent = S.sel.size; $('#selBtn').classList.toggle('has', S.sel.size>0);
+  $$('[data-heart]').forEach(b => { const on = S.sel.has(b.dataset.heart); b.setAttribute('aria-pressed', String(on));
+    const span = $('span', b); if (span && !b.classList.contains('rm')) span.textContent = on ? 'Dans ma sélection' : 'Ajouter à ma sélection';
+    if (b.classList.contains('heart')) { const t = D.byId.get(b.dataset.heart)?.titre || ''; b.setAttribute('aria-label', `${on?'Retirer':'Ajouter'} « ${t} » ${on?'de':'à'} ma sélection`); } });
+  const items = [...S.sel].map(id => D.byId.get(id)).filter(Boolean);
+  $('#selEmpty').hidden = items.length > 0;
+  $('#selAsk').disabled = $('#selCopy').disabled = $('#selClear').disabled = $('#selPrint').disabled = !items.length;
+  $('#selAsk').innerHTML = `${ic('mail')}Demander l'inscription${items.length>1?` (${items.length} formations)`:''}`;
+  $('#selList').innerHTML = items.map(i => `<li class="dc" style="--dc:${i.dom.color}"><span class="drop sm solid" aria-hidden="true">${ic(i.dom.icon)}</span>
+    <div><button type="button" class="t" data-open="${esc(i.id)}">${esc(i.titre)}</button><small>${esc(i.id)} · ${fmtLabel(i)} · ${esc(i.duree.main)}${i.sessions[0]?' · prochaine session '+esc(sessRange(i.sessions[0], true)):''}</small></div>
+    <button type="button" class="rm" data-heart="${esc(i.id)}" aria-label="Retirer ${esc(i.titre)}">${ic('x')}</button></li>`).join('');
+}
+function selText(){
+  const items = [...S.sel].map(id => S.data.byId.get(id)).filter(Boolean);
+  return `Ma sélection de formations — ${S.data.settings.titre} ${S.data.settings.organisation}\n\n` +
+    items.map(i => `• ${i.titre} (${i.id})\n  ${fmtLabel(i)} · ${i.duree.main}${i.prerequis?`\n  Prérequis : ${i.prerequis}`:''}`).join('\n\n');
+}
+
+/* ---------- Demande d'inscription (préparée ici, envoyée par la messagerie du manager) */
+const INS = { list:[], people:1 };
+const memo = () => LS.get('amicial-catalogue-memo', {});
+function openInscription(entries){
+  INS.list = entries.filter(e => S.data.byId.get(e.fid)); INS.people = 1;
+  if (!INS.list.length) return;
+  if ($('#ficheDlg').open) $('#ficheDlg').close();
+  if ($('#selDlg').open) $('#selDlg').close();
+  renderInsForm(); $('#insDlg').showModal(); $('#insForm').scrollTop = 0;
+  const first = $('#insForm select, #insForm input'); if (first) first.focus();
+}
+function fieldHTML(f, scope, val){
+  const id = `f-${scope}-${f.key}`, req = f.required ? '<span class="req" aria-hidden="true">*</span>' : '';
+  const a = `id="${id}" name="${id}" data-fk="${f.key}" ${f.required?'required aria-required="true"':''}`;
+  let ctl;
+  if (f.type==='long') ctl = `<textarea ${a} rows="3">${esc(val)}</textarea>`;
+  else if (f.type==='list' && f.options.length) ctl = `<select ${a}><option value="">Choisir…</option>${f.options.map(o => `<option${o===val?' selected':''}>${esc(o)}</option>`).join('')}</select>`;
+  else if (f.type==='yn') ctl = `<select ${a}><option value="">Choisir…</option><option${val==='Oui'?' selected':''}>Oui</option><option${val==='Non'?' selected':''}>Non</option></select>`;
+  else ctl = `<input ${a} type="${f.type==='date'?'date':f.type==='num'?'number':'text'}" value="${esc(val)}" autocomplete="off">`;
+  return `<div class="field${f.type==='long'?' long':''}"><label for="${id}">${esc(f.label)}${req}</label>${ctl}${f.help?`<span class="help">${esc(f.help)}</span>`:''}<span class="msg" hidden></span></div>`;
+}
+function collectValues(){ const v = {}; $$('#insForm select, #insForm input, #insForm textarea').forEach(el => { if (el.id) v[el.id] = el.value; }); return v; }
+function renderInsForm(prev){
+  const D = S.data, M = memo(); prev = prev || {};
+  const val = (scope, f) => prev[`f-${scope}-${f.key}`] ?? (f.remember ? (M[key(f.label)] || '') : '');
+  const sal = D.form.filter(f => f.bloc==='sal'), dem = D.form.filter(f => f.bloc==='dem');
+  const fl = INS.list.map((e, n) => { const i = D.byId.get(e.fid); const ss = i.sessions;
+    const cur = prev[`sess-${n}`] ?? (e.session != null ? String(e.session) : '');
+    return `<div class="ins-f dc" style="--dc:${i.dom.color}"><span class="drop sm solid" aria-hidden="true">${ic(i.dom.icon)}</span>
+      <div class="t">${esc(i.titre)}<small>${esc(i.id)} · ${fmtLabel(i)} · ${esc(i.duree.main)}</small></div>
+      ${INS.list.length>1?`<button type="button" class="rm" data-insrm="${n}" aria-label="Retirer ${esc(i.titre)} de la demande">${ic('x')}</button>`:'<span></span>'}
+      <div class="field"><label for="sess-${n}">Session souhaitée</label><select id="sess-${n}" name="sess-${n}">
+        <option value="">${ss.length?'Pas de préférence : prochaine session disponible':'Aucune session programmée : à proposer par le service RH'}</option>
+        ${ss.map(s => `<option value="${s.k}"${String(s.k)===cur?' selected':''}${s.statut==='complete'?' disabled':''}>${esc(sessLabel(s))}</option>`).join('')}
+      </select></div></div>`; }).join('');
+  const people = Array.from({length:INS.people}, (_, n) => `<div class="person"><div class="person-h"><b>Salarié ${n+1}</b>${INS.people>1?`<button type="button" class="rm" data-personrm="${n}" aria-label="Retirer le salarié ${n+1}">${ic('x')}</button>`:''}</div>
+      <div class="fields">${sal.map(f => fieldHTML(f, 'p'+n, val('p'+n, f))).join('')}</div></div>`).join('');
+  $('#insForm').innerHTML = `
+    <div class="form-err" id="insErr" role="alert" hidden></div>
+    <div class="form-sec"><h3><span class="num">1</span>Formation${INS.list.length>1?'s':''}</h3>${fl}</div>
+    ${sal.length?`<div class="form-sec"><h3><span class="num">2</span>Salarié${INS.people>1?'s':''} à inscrire</h3>${people}
+      <button type="button" class="btn sm" id="addPerson">${ic('plus')}Ajouter un salarié</button></div>`:''}
+    ${dem.length?`<div class="form-sec"><h3><span class="num">${sal.length?3:2}</span>La demande</h3><div class="fields">${dem.map(f => fieldHTML(f, 'd', val('d', f))).join('')}</div></div>`:''}
+    <p class="rgpd">Ces informations ne sont pas enregistrées sur ce site. Elles servent uniquement à préparer un e-mail au service RH, que vous envoyez vous-même depuis votre messagerie.</p>`;
+  $('#insActions').innerHTML = `<button type="button" class="btn primary" id="insNext">${ic('arrow')}Préparer l'e-mail</button><button type="button" class="btn ghost" data-close>Annuler</button>`;
+  $('#insNext').onclick = submitIns;
+  const ap = $('#addPerson'); if (ap) ap.onclick = () => { const v = collectValues(); const n = INS.people; sal.filter(f => f.remember).forEach(f => { v[`f-p${n}-${f.key}`] = v[`f-p0-${f.key}`] || ''; }); INS.people++; renderInsForm(v); const p = $$('#insForm .person').pop(); if (p) { p.scrollIntoView({block:'nearest', behavior:'smooth'}); const f = $('input,select', p); f && f.focus(); } };
+}
+$('#insForm').addEventListener('click', e => {
+  const r = e.target.closest('[data-insrm],[data-personrm]'); if (!r) return;
+  const v = collectValues();
+  if (r.dataset.insrm != null) {
+    const n = +r.dataset.insrm; const nv = {};
+    Object.entries(v).forEach(([id, x]) => { const m = id.match(/^sess-(\d+)$/); if (!m) { nv[id] = x; return; } const j = +m[1]; if (j < n) nv[id] = x; else if (j > n) nv['sess-'+(j-1)] = x; });
+    INS.list.splice(n,1); renderInsForm(nv);
+  } else {
+    const n = +r.dataset.personrm; const nv = {};
+    Object.entries(v).forEach(([id, x]) => { const m = id.match(/^f-p(\d+)-(.+)$/); if (!m) { nv[id] = x; return; } const j = +m[1]; if (j < n) nv[id] = x; else if (j > n) nv[`f-p${j-1}-${m[2]}`] = x; });
+    INS.people--; renderInsForm(nv);
+  }
+});
+$('#insForm').addEventListener('submit', e => { e.preventDefault(); submitIns(); });
+function submitIns(){
+  const D = S.data; let firstBad = null, nBad = 0;
+  $$('#insForm .field').forEach(fd => { const el = $('[data-fk]', fd); if (!el) return; const bad = el.required && !el.value.trim();
+    fd.classList.toggle('err', bad); const m = $('.msg', fd); m.hidden = !bad; m.textContent = bad ? 'Champ obligatoire' : ''; el.setAttribute('aria-invalid', String(bad));
+    if (bad) { nBad++; firstBad = firstBad || el; } });
+  if (nBad) { const er = $('#insErr'); er.hidden = false; er.textContent = `${nBad} champ${nBad>1?'s':''} obligatoire${nBad>1?'s':''} à compléter.`; firstBad.focus(); return; }
+  const v = collectValues(), M = memo();
+  D.form.filter(f => f.remember).forEach(f => { const x = v[`f-${f.bloc==='sal'?'p0':'d'}-${f.key}`]; if (x) M[key(f.label)] = x; });
+  LS.set('amicial-catalogue-memo', M);
+  const sal = D.form.filter(f => f.bloc==='sal'), dem = D.form.filter(f => f.bloc==='dem');
+  const F = INS.list.map((e, n) => { const i = D.byId.get(e.fid); const sk = v[`sess-${n}`]; const s = sk ? D.sessById.get(+sk) : null; return {i, s}; });
+  const P = Array.from({length:INS.people}, (_, n) => sal.map(f => [f.label, (v[`f-p${n}-${f.key}`]||'').trim()]));
+  const Dm = dem.map(f => [f.label, (v[`f-d-${f.key}`]||'').trim()]);
+  const agence = [...P.flat(), ...Dm].find(([l, x]) => x && key(l).includes('agence'))?.[1] || '';
+  const firstName = P[0]?.find(([l, x]) => x && key(l).includes('nom'))?.[1] || '';
+  const subject = `${D.settings.subject} ${F.length===1 ? F[0].i.id+' '+F[0].i.titre : F.length+' formations'} – ${P.length>1 ? P.length+' salariés' : firstName || '1 salarié'}${agence?' – '+agence:''}`.trim();
+  const L = ['Bonjour,', '', "Merci d'enregistrer la demande d'inscription suivante.", '', F.length>1 ? 'FORMATIONS' : 'FORMATION'];
+  F.forEach(({i, s}) => L.push(`• ${i.id} – ${i.titre}`, `  ${fmtLabel(i)} · ${i.duree.main}`, `  Session : ${s ? sessRange(s) + (s.horaires?' · '+s.horaires:'') + (s.lieu?' · '+s.lieu:'') : i.sessions.length ? 'pas de préférence (prochaine session disponible)' : 'aucune session programmée, merci de proposer une date'}`));
+  if (sal.length) { L.push('', P.length>1 ? 'SALARIÉS' : 'SALARIÉ'); P.forEach((p, n) => { p.forEach(([l, x], k) => L.push(`${P.length>1 ? (k===0 ? (n+1)+'. ' : '   ') : ''}${l} : ${x || '—'}`)); if (n < P.length-1) L.push(''); }); }
+  if (Dm.some(([, x]) => x)) { L.push('', 'DEMANDE'); Dm.forEach(([l, x]) => { if (x) L.push(`${l} : ${x}`); }); }
+  L.push('', `Demande préparée depuis le catalogue de formation en ligne, le ${new Date().toLocaleDateString('fr-FR')}.`);
+  const body = L.join('\r\n'), to = D.settings.mailTo, cc = D.settings.mailCc;
+  const href = `mailto:${to}?${cc?'cc='+encodeURIComponent(cc)+'&':''}subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  $('#insForm').innerHTML = `<div class="ready">
+    <div class="okmark">${ic('check')}</div>
+    <h3>Votre demande est prête</h3>
+    <p style="margin:0;font:400 15px/1.55 var(--f-body)">Ouvrez-la dans votre messagerie, relisez-la, puis cliquez sur <b>Envoyer</b>. Rien n'est envoyé tant que vous ne l'avez pas fait.</p>
+    <div class="to-line">Destinataire : ${to ? `<code>${esc(to.replace(/,/g,', '))}</code><button type="button" class="copy-btn" data-copy="${esc(to)}">Copier l'adresse</button>` : `<span class="pill terr">Adresse du service RH à renseigner (onglet Réglages de l'Excel)</span>`}</div>
+    <div class="mail-prev" tabindex="0" aria-label="Aperçu de l'e-mail"><b>Objet :</b> ${esc(subject)}\n\n${esc(body.replace(/\r/g,''))}</div>
+    ${href.length > 1900 ? `<p class="note">Demande longue : si votre messagerie la coupe, utilisez « Copier la demande » et collez-la dans un nouvel e-mail.</p>` : `<p class="note">Rien ne s'ouvre ? Utilisez « Copier la demande » et collez-la dans un nouvel e-mail.</p>`}
+  </div>`;
+  $('#insActions').innerHTML = `<a class="btn primary" id="insMail" href="${esc(href)}">${ic('mail')}Ouvrir dans ma messagerie</a>
+    <button type="button" class="btn" id="insCopy">${ic('copy')}Copier la demande</button>
+    <button type="button" class="btn ghost" id="insBack">Modifier</button>`;
+  $('#insCopy').onclick = () => copy(`À : ${to || '(service RH)'}\nObjet : ${subject}\n\n${body.replace(/\r/g,'')}`, 'Demande copiée : collez-la dans un nouvel e-mail');
+  $('#insBack').onclick = () => renderInsForm(v);
+  $('#insForm').scrollTop = 0; $('#insMail').focus();
+}
+
+/* ---------- Impression */
+function printFiche(i){
+  const ink = `color-mix(in srgb, ${i.dom.color} 76%, #000)`;
+  return `<section class="p-fiche"><div class="p-head" style="background:color-mix(in srgb, ${i.dom.color} 14%, #fff)">
+    <div class="dom" style="color:${ink}">${esc(i.domaine)}</div><h2>${esc(i.titre)}</h2><div class="id">Réf. ${esc(i.id)}</div></div>
+    <dl class="p-facts"><div><dt>Public</dt><dd>${esc(i.publicDetail||i.publics.join(' · '))}</dd></div><div><dt>Format</dt><dd>${esc(i.format)}${i.precision?' – '+esc(i.precision):''}</dd></div>
+    <div><dt>Durée</dt><dd>${esc(i.duree.main)}${i.duree.detail?' ('+esc(i.duree.detail)+')':''}</dd></div><div><dt>Prérequis</dt><dd>${esc(i.prerequis||'Aucun')}</dd></div>
+    ${i.organismes?`<div><dt>Organismes</dt><dd>${esc(i.organismes)}</dd></div>`:''}${i.territoire?`<div><dt>Territoire</dt><dd>${esc(i.territoire)}</dd></div>`:''}</dl>
+    ${i.objectifs.length?`<h3 style="color:${ink}">Objectifs pédagogiques</h3><ol>${i.objectifs.map(o=>`<li>${esc(o)}</li>`).join('')}</ol>`:''}
+    ${i.programme.length?`<h3 style="color:${ink}">Programme</h3><ol class="prog-p">${i.programme.map(p=>`<li>${esc(p.t)}${p.subs.length?`<ul>${p.subs.map(s=>`<li>${esc(s)}</li>`).join('')}</ul>`:''}</li>`).join('')}</ol>`:''}
+    ${i.sessions.length && !S.data.settings.demo?`<h3 style="color:${ink}">Prochaines sessions</h3><ul>${i.sessions.slice(0,6).map(s=>`<li>${esc(sessLabel(s))}</li>`).join('')}</ul>`:''}
+    <div class="p-foot">${esc(S.data.settings.titre)} ${esc(S.data.settings.organisation)} · ${esc(S.data.settings.version)}</div></section>`;
+}
+function doPrint(html){ $('#print-root').innerHTML = html; setTimeout(() => window.print(), 60); }
+window.addEventListener('afterprint', () => { $('#print-root').innerHTML = ''; });
+function printAll(){
+  const D = S.data, st = D.settings;
+  const toc = D.domaines.map(d => `<h3><i style="background:${d.color}"></i>${esc(d.name)}</h3><ol>${D.published.filter(i=>i.domaine===d.name).map(i=>`<li><span>${esc(i.id)}</span>${esc(i.titre)}</li>`).join('')}</ol>`).join('');
+  doPrint(`<section class="p-cover"><div><img src="logo.png" alt=""></div><div><h1>${esc(st.titre)}</h1><p>${esc(st.accroche)}</p><p style="color:#566878">${D.published.length} formations · ${esc(st.version)}</p></div><p style="font-size:9pt;color:#566878">${esc(st.inscription)}</p></section>
+    <section class="p-toc"><h2>Sommaire</h2>${toc}</section>` + D.domaines.flatMap(d => D.published.filter(i=>i.domaine===d.name)).map(printFiche).join(''));
+}
+function printSel(){
+  const items = [...S.sel].map(id => S.data.byId.get(id)).filter(Boolean);
+  doPrint(`<section class="p-sel p-fiche"><img src="logo.png" alt="" style="height:14mm;width:auto"><h1>Ma sélection de formations</h1>
+    <p style="font:400 10pt var(--f-body)">Salarié : ______________________________ &nbsp; Date de l'entretien : ____ / ____ / ________</p>
+    <table><thead><tr><th>Formation</th><th>Format</th><th>Durée</th><th>Prérequis</th><th>Priorité</th></tr></thead><tbody>
+    ${items.map(i=>`<tr><td><b>${esc(i.titre)}</b><br><span style="color:#566878">${esc(i.id)} · ${esc(i.domaine)}</span></td><td>${fmtLabel(i)}</td><td>${esc(i.duree.main)}</td><td>${esc(i.prerequis)}</td><td><span class="box"></span></td></tr>`).join('')}
+    </tbody></table></section>` + items.map(printFiche).join(''));
+}
+
+/* ---------- Mise à jour : aperçu d'un Excel local */
+function showReport(D, name){
+  const W = D.warn;
+  $('#report').hidden = false;
+  $('#report').innerHTML = `<div class="ok"><span class="pill">${D.counts.pub} formation${D.counts.pub>1?'s':''} publiée${D.counts.pub>1?'s':''}</span><span class="pill">${D.counts.draft} brouillon${D.counts.draft>1?'s':''}</span><span class="pill">${D.counts.arch} archivée${D.counts.arch>1?'s':''}</span><span class="pill">${D.hasSessions ? D.counts.sess+' session'+(D.counts.sess>1?'s':'')+' à venir' : "pas d'onglet Sessions"}</span><span class="pill">${D.counts.fields} champs d'inscription</span>${D.settings.mailTo?'':'<span class="pill terr">E-mail RH non renseigné</span>'}</div>
+    ${W.length ? `<div class="warn"><b>${W.length} point${W.length>1?'s':''} à vérifier avant de publier</b><ul>${W.map(([w,m]) => `<li><b style="display:inline">${esc(w)}</b> : ${esc(m)}</li>`).join('')}</ul></div>` : `<p style="margin:0;color:var(--ok);font-weight:600">Aucun oubli détecté. Le fichier est prêt à être publié.</p>`}
+    <div><button type="button" class="btn primary" id="applyPreview">${ic('arrow')}Voir l'aperçu sur la page</button></div>`;
+  $('#applyPreview').onclick = () => {
+    S.live = S.live || { data:S.data, source:S.source };
+    S.data = D; S.source = `Aperçu local : ${name}`;
+    $('#previewText').textContent = `Aperçu de « ${name} » : visible seulement sur cet écran, rien n'est publié.`;
+    $('#previewBanner').hidden = false; $('#adminDlg').close(); reset(true); renderStatic(); syncSel(); render(); window.scrollTo({top:0});
+  };
+}
+function readFile(file){
+  if (!file) return;
+  if (typeof XLSX === 'undefined') { $('#report').hidden=false; $('#report').innerHTML = `<div class="warn"><b>Lecture impossible</b>Le module de lecture Excel n'a pas pu se charger. Vérifiez la connexion internet puis réessayez.</div>`; return; }
+  const r = new FileReader();
+  r.onload = e => { try { showReport(build(parseWorkbook(XLSX.read(e.target.result, {type:'array'}))), file.name); }
+    catch (err) { $('#report').hidden=false; $('#report').innerHTML = `<div class="warn"><b>Ce fichier ne peut pas être lu</b>${esc(err.message||String(err))} Vérifiez qu'il s'agit bien du modèle catalogue.xlsx.</div>`; } };
+  r.readAsArrayBuffer(file);
+}
+$('#fileIn').addEventListener('change', e => readFile(e.target.files[0]));
+const dz = $('#dropZone');
+['dragenter','dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('over'); }));
+['dragleave','drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('over'); }));
+dz.addEventListener('drop', e => readFile(e.dataTransfer.files[0]));
+$('#previewExit').addEventListener('click', () => { if (!S.live) return; S.data = S.live.data; S.source = S.live.source; S.live = null; $('#previewBanner').hidden = true; reset(true); renderStatic(); syncSel(); render(); });
+
+/* ---------- Divers */
+let tt; function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('on'); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('on'),2000); }
+async function copy(text, okMsg){
+  try { await navigator.clipboard.writeText(text); toast(okMsg); }
+  catch { const ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); let ok=false; try{ok=document.execCommand('copy');}catch{} ta.remove(); toast(ok?okMsg:'Copie impossible : sélectionnez le texte à la main'); }
+}
+function reset(silent){ S.q=''; S.persona=''; S.dom=''; S.fmt=''; S.dur=''; $('#q').value=''; if(!silent) render(); }
+function setView(v){ S.view = v; try { history.replaceState(null,'', location.pathname + location.search + (v==='cal' ? '#calendrier' : '')); } catch {} render(); }
+function route(){
+  const h = decodeURIComponent(location.hash.slice(1));
+  if (!h) return;
+  if (h === 'calendrier') { S.view = 'cal'; render(); return; }
+  if (S.data.byId.has(h.toUpperCase())) { openFiche(h.toUpperCase(), true); return; }
+  const p = S.data.personas.find(x => x.slug === h); if (p) { S.persona = p.slug; render(); }
+}
+
+/* ---------- Évènements */
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-open],[data-heart],[data-dom],[data-p],[data-close],[data-reset],[data-copy],[data-copylink],[data-printone],[data-inscrire],[data-view],[data-month]');
+  if (!t) return;
+  if (t.dataset.inscrire) { const s = t.dataset.session; openInscription([{fid:t.dataset.inscrire, session: s!=null && s!=='' ? +s : null}]); }
+  else if (t.dataset.open) openFiche(t.dataset.open);
+  else if (t.dataset.heart) toggleSel(t.dataset.heart);
+  else if (t.dataset.view) setView(t.dataset.view);
+  else if (t.dataset.month) { e.preventDefault(); document.getElementById('m-'+t.dataset.month)?.scrollIntoView({behavior:'smooth', block:'start'}); }
+  else if (t.dataset.dom !== undefined) { S.dom = S.dom===t.dataset.dom ? '' : t.dataset.dom; render(); }
+  else if (t.dataset.p) { S.persona = S.persona===t.dataset.p ? '' : t.dataset.p; if (S.view==='cat') { try { history.replaceState(null,'', location.pathname + location.search + (S.persona?'#'+S.persona:'')); } catch {} } render(); document.querySelector('.filters').scrollIntoView({behavior:'smooth', block:'start'}); }
+  else if (t.hasAttribute('data-close')) t.closest('dialog').close();
+  else if (t.hasAttribute('data-reset')) reset();
+  else if (t.dataset.copy) copy(t.dataset.copy, 'Adresse copiée');
+  else if (t.dataset.copylink) copy(location.href.split('#')[0] + '#' + t.dataset.copylink, 'Lien de la fiche copié');
+  else if (t.dataset.printone) doPrint(printFiche(S.data.byId.get(t.dataset.printone)));
+});
+$$('dialog').forEach(d => d.addEventListener('click', e => { if (e.target === d) d.close(); }));
+let qt; $('#q').addEventListener('input', e => { clearTimeout(qt); qt = setTimeout(() => { S.q = e.target.value.trim(); render(); }, 120); });
+$('#fmtSeg').addEventListener('click', e => { const b=e.target.closest('button'); if(b){ S.fmt=b.dataset.v; render(); } });
+$('#durSeg').addEventListener('click', e => { const b=e.target.closest('button'); if(b){ S.dur=b.dataset.v; render(); } });
+$('#resetBtn').addEventListener('click', () => { reset(); clearHash(); });
+$('#homeLink').addEventListener('click', e => { e.preventDefault(); reset(true); setView('cat'); window.scrollTo({top:0, behavior:'smooth'}); });
+$('#selBtn').addEventListener('click', () => { syncSel(); $('#selDlg').showModal(); });
+$('#selAsk').addEventListener('click', () => openInscription([...S.sel].map(id => ({fid:id, session:null}))));
+$('#selCopy').addEventListener('click', () => copy(selText(), 'Liste copiée : collez-la où vous voulez'));
+$('#selPrint').addEventListener('click', printSel);
+$('#printAllBtn').addEventListener('click', printAll);
+let clearArmed = false;
+$('#selClear').addEventListener('click', e => { const b=e.currentTarget; if(!clearArmed){ clearArmed=true; b.textContent='Confirmer : tout vider'; setTimeout(()=>{clearArmed=false; b.textContent='Vider';},3000); return; } clearArmed=false; b.textContent='Vider'; S.sel.clear(); saveSel(); syncSel(); });
+$('#adminBtn').addEventListener('click', () => { $('#report').hidden = true; $('#fileIn').value=''; $('#adminDlg').showModal(); });
+document.addEventListener('keydown', e => { if (e.key==='/' && !/input|textarea|select/i.test(document.activeElement.tagName) && !document.querySelector('dialog[open]')) { e.preventDefault(); $('#q').focus(); } });
+window.addEventListener('hashchange', route);
+
+/* ---------- Démarrage : le fichier Excel publié à côté de la page fait foi */
+async function boot(){
+  let raw = null;
+  try {
+    if (typeof XLSX === 'undefined') throw new Error('xlsx');
+    const res = await fetch('catalogue.xlsx', {cache:'no-cache'});
+    if (!res.ok) throw new Error(res.status);
+    raw = parseWorkbook(XLSX.read(await res.arrayBuffer(), {type:'array'}));
+    const lm = res.headers.get('last-modified');
+    S.source = 'Source : catalogue.xlsx' + (lm ? ` · publié le ${new Date(lm).toLocaleDateString('fr-FR', {day:'numeric', month:'long', year:'numeric'})}` : '');
+  } catch (err) {
+    raw = SECOURS; S.source = STANDALONE ? 'Source : copie intégrée (catalogue.xlsx non trouvé)' : 'Aperçu : contenu de catalogue.xlsx intégré à la page';
+  }
+  if (!raw) { $('#results').innerHTML = `<div class="empty"><b>Le catalogue n'a pas pu être chargé.</b>Le fichier catalogue.xlsx est introuvable à côté de cette page.</div>`; return; }
+  S.data = build(raw);
+  renderStatic(); syncSel(); render(); route();
+}
+boot();
+})();
+</script>
+
+</body>
+</html>
