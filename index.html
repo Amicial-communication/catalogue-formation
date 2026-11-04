@@ -183,6 +183,49 @@ mark{background:var(--accent-soft);color:inherit;border-radius:3px;padding:0 2px
 .sess-side{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
 .cal-note{margin-top:8px;color:var(--muted);font-size:14px}
 
+/* Vue Mois (agenda) */
+.cal-bar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin-bottom:18px}
+.cal-bar .seg button{display:inline-flex;align-items:center;gap:6px}
+.mchips{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.mchips .eyebrow{margin-right:4px;white-space:nowrap}
+.month-chip{white-space:nowrap}
+.mwrap{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:20px;align-items:start}
+.mhead{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.mhead h2{font:800 22px/1.2 var(--f-display);margin:0;color:var(--primary);text-transform:capitalize;min-width:190px}
+.mhead .k{font:600 12.5px var(--f-sub);color:var(--muted)}
+.navb{width:36px;height:36px;border-radius:50%;border:1px solid var(--line-strong);background:var(--card);display:grid;place-items:center}
+.navb:hover{border-color:var(--primary)}
+.navb svg{width:18px;height:18px}
+.mgrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr)) repeat(2,minmax(0,.6fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.wd{background:var(--surface);font:600 11.5px var(--f-sub);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px 8px 7px}
+.day{all:unset;box-sizing:border-box;background:var(--card);min-height:112px;padding:6px 6px 8px;display:flex;flex-direction:column;gap:4px;cursor:pointer;min-width:0;position:relative}
+.day:hover{background:var(--surface)}
+.day:focus-visible{outline:3px solid var(--accent);outline-offset:-3px}
+.day .n{font:700 13px/26px var(--f-display);width:26px;height:26px;text-align:center;border-radius:50% 3px 50% 50%;font-variant-numeric:tabular-nums}
+.day.out{background:var(--surface)}
+.day.out .n,.day.past .n{color:var(--muted);font-weight:600}
+.day.today .n{background:var(--primary);color:#fff}
+.day.sel{box-shadow:inset 0 0 0 2px var(--primary);background:var(--primary-soft)}
+.day.we{background:color-mix(in srgb,var(--surface) 60%,#fff)}
+.day.we.sel{background:var(--primary-soft)}
+.evs{display:flex;flex-direction:column;gap:3px;min-width:0}
+.ev{display:flex;align-items:center;gap:5px;font:600 11.5px/1.25 var(--f-display);padding:3px 6px;border-radius:6px;background:var(--dc-tint-2);color:var(--dc-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.ev::before{content:"";flex:none;width:7px;height:7px;border-radius:50% 1px 50% 50%;background:var(--dc)}
+.ev span{overflow:hidden;text-overflow:ellipsis}
+.ev.full{background:#fff;box-shadow:inset 0 0 0 1px var(--dc-line);color:var(--muted)}
+.day.past .ev{opacity:.55}
+.more{font:600 11px var(--f-sub);color:var(--muted);padding-left:4px}
+.dots{display:none;gap:3px;flex-wrap:wrap}
+.dots i{width:8px;height:8px;border-radius:50% 1px 50% 50%}
+.daypanel{position:sticky;top:176px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.daypanel h3{font:800 17px/1.3 var(--f-display);margin:0 0 2px}
+.daypanel h3::first-letter{text-transform:uppercase}
+.daypanel>.note{margin:0 0 12px}
+.sess.compact{grid-template-columns:minmax(0,1fr);padding:12px 14px;gap:10px}
+.sess.compact .sess-side{flex-direction:row;justify-content:space-between;align-items:center}
+.sess.compact .sess-main button{font-size:15px}
+.pill.part{background:var(--dc-tint-2);color:var(--dc-ink)}
+
 /* ---------- Pied */
 .foot{background:var(--surface);border-top:1px solid var(--line)}
 .foot-in{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:32px;padding-block:32px 40px}
@@ -341,6 +384,20 @@ dialog.modal{width:min(720px,calc(100vw - 32px));border-radius:18px;max-height:c
   .sess{grid-template-columns:auto minmax(0,1fr);gap:12px}
   .sess-side{grid-column:1/-1;flex-direction:row;justify-content:space-between;align-items:center}
   .month{scroll-margin-top:16px}
+  .mgrid{grid-template-columns:repeat(5,minmax(0,1fr)) repeat(2,minmax(0,.7fr))}
+  .mchips{flex-wrap:nowrap;overflow-x:auto;width:calc(100% + 32px);margin-inline:-16px;padding:0 16px 2px;scrollbar-width:none}
+  .mchips::-webkit-scrollbar{display:none}
+  .day{min-height:54px;padding:4px;gap:3px}
+  .day .n{width:24px;height:24px;line-height:24px;font-size:12.5px}
+  .evs{display:none}
+  .dots{display:flex}
+  .wd{padding:6px 4px;font-size:10.5px;letter-spacing:.02em;text-align:center}
+  .mhead h2{font-size:19px;min-width:0;flex:1}
+  .daypanel{position:static}
+}
+@media (max-width: 1100px){
+  .mwrap{grid-template-columns:minmax(0,1fr)}
+  .daypanel{position:static}
 }
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
@@ -790,6 +847,7 @@ const S = { view:'cat', q:'', persona:'', dom:'', fmt:'', dur:'', sel:new Set(),
 const LS = { get(k, d){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } }, set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
 LS.get('amicial-catalogue-selection', []).forEach(id => S.sel.add(id));
 const saveSel = () => LS.set('amicial-catalogue-selection', [...S.sel]);
+S.calMode = LS.get('amicial-catalogue-calmode', 'mois') === 'liste' ? 'liste' : 'mois'; S.calMonth = null; S.calDay = null;
 
 /* ---------- Rendu commun */
 function daysHTML(h){
@@ -876,24 +934,74 @@ function render(){
       <div class="grid">${g.map(i => cardHTML(i, k++)).join('')}</div></section>`;
   }).join('');
 }
+const addDays = (iso, n) => { const d = toDate(iso); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0,10); };
+const dow = iso => (toDate(iso).getUTCDay() + 6) % 7;
+const monthAdd = (m, n) => { const d = new Date(Date.UTC(+m.slice(0,4), +m.slice(5,7) - 1 + n, 1)); return d.toISOString().slice(0,7); };
+const mName = (m, o) => toDate(m+'-01').toLocaleDateString('fr-FR', {timeZone:'UTC', month:o||'long', year:'numeric'});
+function sessDays(s){
+  if (!s.end) return [s.start];
+  const span = Math.round((toDate(s.end) - toDate(s.start)) / 864e5) + 1;
+  if (span > 7) return [s.start];
+  const out = []; for (let k = 0; k < span; k++) { const d = addDays(s.start, k); if (dow(d) < 5 || d === s.start || d === s.end) out.push(d); } return out;
+}
+function sessRowHTML(s, compact, part){
+  const i = s.f, d = toDate(s.start);
+  return `<article class="sess dc${compact?' compact':''}" style="--dc:${i.dom.color}">
+    ${compact ? '' : `<div class="sess-date" aria-hidden="true"><small>${esc(fmtD(s.start,{weekday:'short'}).replace('.',''))}</small><b>${d.getUTCDate()}</b><span>${esc(fmtD(s.start,{month:'short'}))}</span></div>`}
+    <div class="sess-main"><span class="sess-dom">${esc(i.domaine)}</span><button type="button" data-open="${esc(i.id)}">${hl(i.titre)}</button>
+      <div class="sess-meta"><span>${ic('cal')}${esc(sessRange(s))}</span>${part?`<span class="pill part">${esc(part)}</span>`:''}${s.horaires?`<span>${ic('clock')}${esc(s.horaires)}</span>`:''}${s.lieu?`<span>${ic(norm(s.modalite).includes('distan')?'screen':'pin')}${esc(s.lieu)}</span>`:''}${s.organisme?`<span>${esc(s.organisme)}</span>`:''}</div></div>
+    <div class="sess-side">${placesPill(s)}<button type="button" class="btn primary sm" data-inscrire="${esc(i.id)}" data-session="${s.k}" ${s.statut==='complete'?'disabled':''}>${ic('mail')}Inscrire</button></div>
+  </article>`;
+}
 function renderCalendar(active){
   const D = S.data;
   if (!D.hasSessions) { $('#resultCount').innerHTML=''; $('#results').innerHTML = `<div class="empty"><b>Le calendrier n'est pas encore alimenté.</b>Ajoutez un onglet « Sessions » dans catalogue.xlsx pour afficher les dates.</div>`; return; }
   const list = D.sessions.filter(s => sessMatches(s));
   $('#resultCount').innerHTML = `<b>${list.length}</b> session${list.length>1?'s':''} à venir${active?' sur '+D.sessions.length:''}`;
-  if (!list.length) { $('#results').innerHTML = `<div class="empty"><b>Aucune session programmée pour ces critères.</b>Ouvrez une fiche formation pour faire une demande : le service RH vous recontactera. <button type="button" class="link-btn" data-reset>Effacer les filtres</button></div>`; return; }
   const months = []; list.forEach(s => { const m = s.start.slice(0,7); let g = months.find(x => x.m===m); if (!g) months.push(g = {m, items:[]}); g.items.push(s); });
-  const mName = (m, o) => toDate(m+'-01').toLocaleDateString('fr-FR', {timeZone:'UTC', month:o||'long', year:'numeric'});
-  $('#results').innerHTML = `<div class="cal-top"><span class="eyebrow">Aller à</span>${months.map(g => `<a class="month-chip" href="#m-${g.m}" data-month="${g.m}">${esc(mName(g.m,'short'))} <span>${g.items.length}</span></a>`).join('')}</div>` +
-    months.map(g => `<section class="month" id="m-${g.m}"><h2>${esc(mName(g.m))}</h2><div class="sess-list">${g.items.map(s => {
-      const i = s.f, d = toDate(s.start);
-      return `<article class="sess dc" style="--dc:${i.dom.color}">
-        <div class="sess-date" aria-hidden="true"><small>${esc(fmtD(s.start,{weekday:'short'}).replace('.',''))}</small><b>${d.getUTCDate()}</b><span>${esc(fmtD(s.start,{month:'short'}))}</span></div>
-        <div class="sess-main"><span class="sess-dom">${esc(i.domaine)}</span><button type="button" data-open="${esc(i.id)}">${hl(i.titre)}</button>
-          <div class="sess-meta"><span>${ic('cal')}${esc(sessRange(s))}</span>${s.horaires?`<span>${ic('clock')}${esc(s.horaires)}</span>`:''}${s.lieu?`<span>${ic(norm(s.modalite).includes('distan')?'screen':'pin')}${esc(s.lieu)}</span>`:''}${s.organisme?`<span>${esc(s.organisme)}</span>`:''}</div></div>
-        <div class="sess-side">${placesPill(s)}<button type="button" class="btn primary sm" data-inscrire="${esc(i.id)}" data-session="${s.k}" ${s.statut==='complete'?'disabled':''}>${ic('mail')}Inscrire</button></div>
-      </article>`; }).join('')}</div></section>`).join('') +
-    `<p class="cal-note">Pas de session pour une formation qui vous intéresse ? Ouvrez sa fiche et faites une demande : le service RH vous recontactera.</p>`;
+  const mois = S.calMode === 'mois';
+  if (mois && !S.calMonth) S.calMonth = months.length ? months[0].m : TODAY.slice(0,7);
+  const bar = `<div class="cal-bar">
+      <div class="seg" role="group" aria-label="Affichage du calendrier">
+        <button type="button" data-calmode="mois" aria-pressed="${mois}">${ic('cal')}Mois</button>
+        <button type="button" data-calmode="liste" aria-pressed="${!mois}">${ic('list')}Liste</button>
+      </div>
+      ${months.length ? `<div class="mchips"><span class="eyebrow">Aller à</span>${months.map(g => `<a class="month-chip" href="#m-${g.m}" data-month="${g.m}"${mois && g.m===S.calMonth?' aria-current="true" style="border-color:var(--primary);background:var(--primary-soft)"':''}>${esc(mName(g.m,'short'))} <span>${g.items.length}</span></a>`).join('')}</div>` : ''}
+    </div>`;
+  if (!mois) {
+    if (!list.length) { $('#results').innerHTML = bar + `<div class="empty"><b>Aucune session programmée pour ces critères.</b>Ouvrez une fiche formation pour faire une demande : le service RH vous recontactera. <button type="button" class="link-btn" data-reset>Effacer les filtres</button></div>`; return; }
+    $('#results').innerHTML = bar + months.map(g => `<section class="month" id="m-${g.m}"><h2>${esc(mName(g.m))}</h2><div class="sess-list">${g.items.map(s => sessRowHTML(s)).join('')}</div></section>`).join('') +
+      `<p class="cal-note">Pas de session pour une formation qui vous intéresse ? Ouvrez sa fiche et faites une demande : le service RH vous recontactera.</p>`;
+    return;
+  }
+  /* Vue Mois : grille lundi → dimanche, panneau du jour sélectionné */
+  const m = S.calMonth;
+  const byDay = new Map();
+  list.forEach(s => { const ds = sessDays(s); ds.forEach((d, n) => { if (!byDay.has(d)) byDay.set(d, []); byDay.get(d).push({s, part: ds.length > 1 ? `Jour ${n+1} sur ${ds.length}` : (s.end ? `jusqu'au ${fmtD(s.end,{day:'numeric', month:'short'})}` : '')}); }); });
+  const first = m + '-01', lastDay = new Date(Date.UTC(+m.slice(0,4), +m.slice(5,7), 0)).toISOString().slice(0,10);
+  const days = []; for (let d = addDays(first, -dow(first)); d <= addDays(lastDay, 6 - dow(lastDay)); d = addDays(d, 1)) days.push(d);
+  const inMonth = [...new Set([...byDay.entries()].filter(([d]) => d.slice(0,7)===m).flatMap(([, ev]) => ev.map(e => e.s)))];
+  const dayKeys = [...byDay.keys()].filter(d => d.slice(0,7)===m).sort();
+  if (!S.calDay || S.calDay.slice(0,7) !== m) S.calDay = dayKeys.find(d => d >= TODAY) || dayKeys[0] || null;
+  const cell = d => { const ev = byDay.get(d) || [];
+    const cls = ['day', d.slice(0,7)!==m?'out':'', d===TODAY?'today':'', d<TODAY?'past':'', d===S.calDay?'sel':'', dow(d)>4?'we':''].filter(Boolean).join(' ');
+    const label = `${fmtD(d,{weekday:'long', day:'numeric', month:'long'})}${ev.length?` : ${ev.length} session${ev.length>1?'s':''}`:''}`;
+    return `<button type="button" class="${cls}" data-day="${d}" aria-pressed="${d===S.calDay}" aria-label="${esc(label)}"><span class="n">${toDate(d).getUTCDate()}</span>
+      ${ev.length ? `<span class="evs">${ev.slice(0,3).map(e => `<span class="ev dc${e.s.statut==='complete'?' full':''}" style="--dc:${e.s.f.dom.color}"><span>${esc(e.s.f.titre)}</span></span>`).join('')}${ev.length>3?`<span class="more">+${ev.length-3} autre${ev.length>4?'s':''}</span>`:''}</span>
+      <span class="dots" aria-hidden="true">${ev.slice(0,4).map(e => `<i style="background:${e.s.f.dom.color}"></i>`).join('')}</span>` : ''}</button>`; };
+  const dayEv = S.calDay ? (byDay.get(S.calDay) || []) : [];
+  const panel = `<aside class="daypanel" id="dayPanel" aria-live="polite">${S.calDay
+      ? `<h3>${esc(fmtD(S.calDay,{weekday:'long', day:'numeric', month:'long', year:'numeric'}))}</h3><p class="note">${dayEv.length ? `${dayEv.length} session${dayEv.length>1?'s':''} ce jour-là` : 'Aucune session ce jour-là.'}</p>
+         <div class="sess-list">${dayEv.map(e => sessRowHTML(e.s, true, e.part)).join('')}</div>`
+      : `<h3>${esc(mName(m))}</h3><p class="note" style="margin:0">Aucune session ce mois-ci pour ces critères. Changez de mois avec les flèches ou les étiquettes ci-dessus.</p>`}</aside>`;
+  $('#results').innerHTML = bar + `<div class="mwrap"><div class="mcal">
+      <div class="mhead"><button type="button" class="navb" data-mnav="-1" aria-label="Mois précédent"><svg class="i" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <h2>${esc(mName(m))}</h2>
+        <button type="button" class="navb" data-mnav="1" aria-label="Mois suivant"><svg class="i" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+        <span class="k">${inMonth.length} session${inMonth.length>1?'s':''}</span>
+        ${m!==TODAY.slice(0,7)?`<button type="button" class="link-btn" data-mnav="0">Aujourd'hui</button>`:''}</div>
+      <div class="mgrid" role="group" aria-label="${esc(mName(m))}">${['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'].map(w => `<span class="wd" aria-hidden="true">${w}</span>`).join('')}${days.map(cell).join('')}</div>
+    </div>${panel}</div>` + `<p class="cal-note">Pas de session pour une formation qui vous intéresse ? Ouvrez sa fiche et faites une demande : le service RH vous recontactera.</p>`;
 }
 function renderStatic(){
   const D = S.data, st = D.settings;
@@ -1168,13 +1276,16 @@ function route(){
 
 /* ---------- Évènements */
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-open],[data-heart],[data-dom],[data-p],[data-close],[data-reset],[data-copy],[data-copylink],[data-printone],[data-inscrire],[data-view],[data-month]');
+  const t = e.target.closest('[data-open],[data-heart],[data-dom],[data-p],[data-close],[data-reset],[data-copy],[data-copylink],[data-printone],[data-inscrire],[data-view],[data-month],[data-calmode],[data-mnav],[data-day]');
   if (!t) return;
   if (t.dataset.inscrire) { const s = t.dataset.session; openInscription([{fid:t.dataset.inscrire, session: s!=null && s!=='' ? +s : null}]); }
   else if (t.dataset.open) openFiche(t.dataset.open);
   else if (t.dataset.heart) toggleSel(t.dataset.heart);
   else if (t.dataset.view) setView(t.dataset.view);
-  else if (t.dataset.month) { e.preventDefault(); document.getElementById('m-'+t.dataset.month)?.scrollIntoView({behavior:'smooth', block:'start'}); }
+  else if (t.dataset.calmode) { S.calMode = t.dataset.calmode; LS.set('amicial-catalogue-calmode', S.calMode); render(); }
+  else if (t.dataset.mnav != null) { S.calMonth = t.dataset.mnav === '0' ? TODAY.slice(0,7) : monthAdd(S.calMonth || TODAY.slice(0,7), +t.dataset.mnav); S.calDay = null; render(); }
+  else if (t.dataset.day) { const d = t.dataset.day; S.calDay = d; S.calMonth = d.slice(0,7); render(); const b = document.querySelector(`[data-day="${d}"]`); b && b.focus({preventScroll:true}); if (window.innerWidth <= 1100) $('#dayPanel')?.scrollIntoView({behavior:'smooth', block:'nearest'}); }
+  else if (t.dataset.month) { e.preventDefault(); if (S.calMode === 'mois') { S.calMonth = t.dataset.month; S.calDay = null; render(); } else document.getElementById('m-'+t.dataset.month)?.scrollIntoView({behavior:'smooth', block:'start'}); }
   else if (t.dataset.dom !== undefined) { S.dom = S.dom===t.dataset.dom ? '' : t.dataset.dom; render(); }
   else if (t.dataset.p) { S.persona = S.persona===t.dataset.p ? '' : t.dataset.p; if (S.view==='cat') { try { history.replaceState(null,'', location.pathname + location.search + (S.persona?'#'+S.persona:'')); } catch {} } render(); document.querySelector('.filters').scrollIntoView({behavior:'smooth', block:'start'}); }
   else if (t.hasAttribute('data-close')) t.closest('dialog').close();
