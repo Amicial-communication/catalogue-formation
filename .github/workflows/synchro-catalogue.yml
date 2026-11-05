@@ -1,0 +1,127 @@
+# Robot de synchronisation : récupère catalogue.xlsx sur SharePoint, le contrôle et le publie s'il a changé.
+# Réglage unique : le secret SHAREPOINT_URL (lien « Toute personne disposant du lien », lecture seule).
+# Voir LISEZMOI.md.
+name: Synchronisation du catalogue
+
+on:
+  schedule:
+    - cron: '7,22,37,52 * * * *'   # toutes les 15 minutes
+  workflow_dispatch:                 # bouton « Run workflow » dans l'onglet Actions
+  repository_dispatch:               # déclenchement immédiat (Power Automate, facultatif)
+    types: [catalogue-modifie]
+
+permissions:
+  contents: write
+  issues: write
+  pages: write
+
+concurrency:
+  group: synchro-catalogue
+  cancel-in-progress: false
+
+env:
+  TITRE_ALERTE: Synchronisation du catalogue bloquée
+
+jobs:
+  synchro:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Vérifier que le lien SharePoint est renseigné
+        id: lien
+        env:
+          SHAREPOINT_URL: ${{ secrets.SHAREPOINT_URL }}
+        run: |
+          if [ -z "$SHAREPOINT_URL" ]; then
+            echo "actif=non" >> "$GITHUB_OUTPUT"
+            {
+              echo "### Synchronisation en attente"
+              echo "Le secret **SHAREPOINT_URL** n'est pas encore renseigné : Settings → Secrets and variables → Actions."
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "actif=oui" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Télécharger le fichier depuis SharePoint
+        id: telechargement
+        if: steps.lien.outputs.actif == 'oui'
+        env:
+          SHAREPOINT_URL: ${{ secrets.SHAREPOINT_URL }}
+        run: |
+          url="$SHAREPOINT_URL"
+          case "$url" in
+            *download=1*) ;;
+            *\?*) url="${url}&download=1" ;;
+            *)    url="${url}?download=1" ;;
+          esac
+          code=$(curl -sSL --retry 3 --retry-delay 10 --max-time 120 -o "$RUNNER_TEMP/catalogue.xlsx" -w '%{http_code}' "$url" || true)
+          echo "code=${code:-000}" >> "$GITHUB_OUTPUT"
+
+      - name: Contrôler le fichier
+        id: controle
+        if: steps.lien.outputs.actif == 'oui'
+        run: |
+          pip install --quiet --disable-pip-version-check openpyxl==3.1.5
+          touch "$RUNNER_TEMP/catalogue.xlsx"
+          python .github/scripts/verifier_catalogue.py "$RUNNER_TEMP/catalogue.xlsx" catalogue.xlsx "${{ steps.telechargement.outputs.code }}"
+          cat rapport.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publier la nouvelle version
+        if: steps.controle.outputs.decision == 'publier'
+        env:
+          RESUME: ${{ steps.controle.outputs.resume }}
+        run: |
+          cp "$RUNNER_TEMP/catalogue.xlsx" catalogue.xlsx
+          git config user.name "robot-catalogue"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add catalogue.xlsx
+          git commit -m "Catalogue synchronisé depuis SharePoint ($RESUME)"
+          git push
+
+      - name: Relancer la mise en ligne GitHub Pages
+        if: steps.controle.outputs.decision == 'publier'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "repos/${{ github.repository }}/pages/builds" --silent || true
+
+      - name: Ouvrir ou mettre à jour l'alerte
+        if: steps.controle.outputs.decision == 'bloque'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            cat rapport.md
+            echo
+            echo "_Dernière tentative : $(TZ=Europe/Paris date '+%d/%m/%Y à %H:%M'). Détail : ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}_"
+          } > alerte.md
+          num=$(gh issue list --state open --search "\"$TITRE_ALERTE\" in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$num" ]; then
+            gh issue edit "$num" --body-file alerte.md
+          else
+            gh issue create --title "$TITRE_ALERTE" --body-file alerte.md
+          fi
+
+      - name: Fermer l'alerte quand tout repart
+        if: steps.controle.outputs.decision == 'publier' || steps.controle.outputs.decision == 'identique'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for num in $(gh issue list --state open --search "\"$TITRE_ALERTE\" in:title" --json number --jq '.[].number'); do
+            gh issue close "$num" --comment "Synchronisation rétablie : $(TZ=Europe/Paris date '+%d/%m/%Y à %H:%M')."
+          done
+
+      - name: Garder le robot actif
+        # GitHub suspend les tâches programmées d'un dépôt public sans activité depuis 60 jours.
+        run: |
+          derniere=$(git log -1 --format=%ct)
+          if [ $(( $(date +%s) - derniere )) -gt $(( 45 * 86400 )) ]; then
+            git config user.name "robot-catalogue"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git pull --quiet --rebase
+            git commit --allow-empty -m "Maintien du robot de synchronisation"
+            git push
+          fi
