@@ -7,6 +7,11 @@ on:
   schedule:
     - cron: '7,22,37,52 * * * *'   # toutes les 15 minutes
   workflow_dispatch:                 # bouton « Run workflow » dans l'onglet Actions
+    inputs:
+      lien_test:
+        description: "Lien de test à la place du lien SharePoint (laisser vide)"
+        required: false
+        default: ""
   repository_dispatch:               # déclenchement immédiat (Power Automate, facultatif)
     types: [catalogue-modifie]
 
@@ -24,16 +29,21 @@ env:
 
 jobs:
   synchro:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - name: Récupérer le dépôt
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+
+      - name: Préparer Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
 
       - name: Vérifier que le lien SharePoint est renseigné
         id: lien
         env:
-          SHAREPOINT_URL: ${{ secrets.SHAREPOINT_URL }}
+          SHAREPOINT_URL: ${{ inputs.lien_test || secrets.SHAREPOINT_URL }}
         run: |
           if [ -z "$SHAREPOINT_URL" ]; then
             echo "actif=non" >> "$GITHUB_OUTPUT"
@@ -49,7 +59,7 @@ jobs:
         id: telechargement
         if: steps.lien.outputs.actif == 'oui'
         env:
-          SHAREPOINT_URL: ${{ secrets.SHAREPOINT_URL }}
+          SHAREPOINT_URL: ${{ inputs.lien_test || secrets.SHAREPOINT_URL }}
         run: |
           url="$SHAREPOINT_URL"
           case "$url" in
