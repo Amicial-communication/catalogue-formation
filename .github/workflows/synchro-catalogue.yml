@@ -73,9 +73,14 @@ jobs:
           res=$(curl -sSL -A "$ua" -c "$jar" -b "$jar" -D "$RUNNER_TEMP/entetes.txt" --retry 3 --retry-delay 10 --max-time 120 -o "$RUNNER_TEMP/catalogue.xlsx" -w '%{http_code} %{url_effective}' "$url" || true)
           code=${res%% *}
           # Diagnostic sans révéler le lien : empreinte courte du lien et étapes de redirection (domaine ou page SharePoint).
-          empreinte=$(printf '%s' "$SHAREPOINT_URL" | sha256sum | cut -c1-8)
+          base="${SHAREPOINT_URL%%\?*}"; base="${base%"${base##*[![:space:]]}"}"
+          empreinte=$(printf '%s' "$base" | sha256sum | cut -c1-8)
+          titre=""
+          if [ "$(head -c 2 "$RUNNER_TEMP/catalogue.xlsx" 2>/dev/null)" != "PK" ]; then
+            titre=$(tr '\n\r' '  ' < "$RUNNER_TEMP/catalogue.xlsx" 2>/dev/null | grep -oi '<title[^>]*>[^<]*' | head -1 | sed -E 's/<title[^>]*>//I' | cut -c1-80 || true)
+          fi
           etapes=$(grep -i '^location:' "$RUNNER_TEMP/entetes.txt" 2>/dev/null | tr -d '\r' | sed -E 's#^[Ll]ocation: *##; s#^https?://([^/?]+)/_layouts/15/([A-Za-z]+\.aspx).*#\1 \2#; s#^https?://([^/?]+).*#\1#; s#^/_layouts/15/([A-Za-z]+\.aspx).*#\1#; s#^/.*#(même site)#' | paste -sd '>' - || true)
-          echo "_Empreinte du lien : ${empreinte} · réponse ${code:-000} · redirections : ${etapes:-aucune}_" > diag.txt
+          echo "_Empreinte du lien : ${empreinte} · réponse ${code:-000} · redirections : ${etapes:-aucune}${titre:+ · page reçue : « ${titre} »}_" > diag.txt
           # Seul le nom de domaine final est gardé (jamais le lien lui-même) pour expliquer un échec.
           hote=$(printf '%s' "${res#* }" | sed -E 's#^[a-z]+://([^/?]+).*#\1#')
           echo "code=${code:-000}" >> "$GITHUB_OUTPUT"
