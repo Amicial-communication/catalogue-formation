@@ -169,6 +169,7 @@ def analyser(path):
 
 def main():
     nouveau, en_ligne, code = sys.argv[1], sys.argv[2], sys.argv[3]
+    hote = (sys.argv[4] if len(sys.argv) > 4 else "").lower()
     out = os.environ.get("GITHUB_OUTPUT")
     lignes = []
 
@@ -187,6 +188,15 @@ def main():
                        "le robot réessaie à chaque passage (plusieurs fois par jour, ou tout de suite avec Run workflow) et ce ticket se ferme tout seul quand tout repart."])
         sortie("bloque")
 
+    if "login.microsoftonline" in hote or "login.live" in hote:
+        return bloquer("Le lien demande une connexion Amicial. Dans « Paramètres du lien », choisissez "
+                       "« Toute personne disposant du lien », cliquez sur Appliquer, puis copiez le lien à nouveau.")
+    if code in ("401", "403"):
+        return bloquer(f"SharePoint refuse le téléchargement (code {code}). Causes les plus fréquentes : le lien n'est "
+                       "pas de type « Toute personne disposant du lien » (« Personnes dans AMICIAL » ne marche pas), "
+                       "ou l'option « Bloquer le téléchargement » est cochée dans les paramètres du lien.")
+    if code == "404":
+        return bloquer("Lien introuvable (code 404) : le lien a été supprimé, ou le fichier supprimé ou déplacé vers un autre site.")
     if code != "200":
         return bloquer(f"Téléchargement impossible (code {code}). Le lien de partage a peut-être expiré, "
                        "été supprimé, ou le fichier a été déplacé.")

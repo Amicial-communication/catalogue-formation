@@ -67,8 +67,13 @@ jobs:
             *\?*) url="${url}&download=1" ;;
             *)    url="${url}?download=1" ;;
           esac
-          code=$(curl -sSL --retry 3 --retry-delay 10 --max-time 120 -o "$RUNNER_TEMP/catalogue.xlsx" -w '%{http_code}' "$url" || true)
+          ua="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
+          res=$(curl -sSL -A "$ua" --retry 3 --retry-delay 10 --max-time 120 -o "$RUNNER_TEMP/catalogue.xlsx" -w '%{http_code} %{url_effective}' "$url" || true)
+          code=${res%% *}
+          # Seul le nom de domaine final est gardé (jamais le lien lui-même) pour expliquer un échec.
+          hote=$(printf '%s' "${res#* }" | sed -E 's#^[a-z]+://([^/?]+).*#\1#')
           echo "code=${code:-000}" >> "$GITHUB_OUTPUT"
+          echo "hote=${hote}" >> "$GITHUB_OUTPUT"
 
       - name: Contrôler le fichier
         id: controle
@@ -76,7 +81,7 @@ jobs:
         run: |
           pip install --quiet --disable-pip-version-check openpyxl==3.1.5
           touch "$RUNNER_TEMP/catalogue.xlsx"
-          python .github/scripts/verifier_catalogue.py "$RUNNER_TEMP/catalogue.xlsx" catalogue.xlsx "${{ steps.telechargement.outputs.code }}"
+          python .github/scripts/verifier_catalogue.py "$RUNNER_TEMP/catalogue.xlsx" catalogue.xlsx "${{ steps.telechargement.outputs.code }}" "${{ steps.telechargement.outputs.hote }}"
           cat rapport.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Publier la nouvelle version
