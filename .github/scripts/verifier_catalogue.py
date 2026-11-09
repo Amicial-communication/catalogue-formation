@@ -71,6 +71,21 @@ def parse_date(v):
     return bool(re.match(r"^\d{4}-\d{1,2}-\d{1,2}", s) or re.match(r"^\d{1,2}[/.\-]\d{1,2}[/.\-]\d{2,4}$", s))
 
 
+def texte_page(path):
+    """Texte visible de la page reçue, nettoyé de toute adresse ou jeton, pour comprendre le refus."""
+    try:
+        html = open(path, "rb").read(200_000).decode("utf-8", "replace")
+    except OSError:
+        return ""
+    html = re.sub(r"(?is)<(script|style|noscript)[^>]*>.*?</\1>", " ", html)
+    txt = re.sub(r"(?s)<[^>]+>", " ", html)
+    txt = re.sub(r"&[a-z]+;|&#\d+;", " ", txt)
+    txt = re.sub(r"https?://\S+", "[adresse]", txt)
+    txt = re.sub(r"[A-Za-z0-9_\-]{20,}", "[…]", txt)
+    txt = re.sub(r"\s+", " ", txt).strip()
+    return f" Message de SharePoint : « {txt[:300]} »" if txt else ""
+
+
 class Bloque(Exception):
     pass
 
@@ -204,7 +219,8 @@ def main():
         debut = f.read(4)
     if debut[:2] != b"PK":
         return bloquer("Le lien renvoie une page web au lieu du fichier. Vérifiez que le lien est de type "
-                       "« Toute personne disposant du lien » (lecture seule).")
+                       "« Toute personne disposant du lien » (lecture seule) et que « Bloquer le téléchargement » "
+                       "est décoché." + texte_page(nouveau))
 
     if os.path.exists(en_ligne):
         with open(nouveau, "rb") as a, open(en_ligne, "rb") as b:
