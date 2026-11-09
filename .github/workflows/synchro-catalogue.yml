@@ -68,8 +68,14 @@ jobs:
             *)    url="${url}?download=1" ;;
           esac
           ua="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
-          res=$(curl -sSL -A "$ua" --retry 3 --retry-delay 10 --max-time 120 -o "$RUNNER_TEMP/catalogue.xlsx" -w '%{http_code} %{url_effective}' "$url" || true)
+          jar="$RUNNER_TEMP/cookies.txt"; : > "$jar"
+          # Les liens « Toute personne » de SharePoint posent un cookie d'invité pendant les redirections : on le garde.
+          res=$(curl -sSL -A "$ua" -c "$jar" -b "$jar" -D "$RUNNER_TEMP/entetes.txt" --retry 3 --retry-delay 10 --max-time 120 -o "$RUNNER_TEMP/catalogue.xlsx" -w '%{http_code} %{url_effective}' "$url" || true)
           code=${res%% *}
+          # Diagnostic sans révéler le lien : empreinte courte du lien et étapes de redirection (domaine ou page SharePoint).
+          empreinte=$(printf '%s' "$SHAREPOINT_URL" | sha256sum | cut -c1-8)
+          etapes=$(grep -i '^location:' "$RUNNER_TEMP/entetes.txt" 2>/dev/null | tr -d '\r' | sed -E 's#^[Ll]ocation: *##; s#^https?://([^/?]+)/_layouts/15/([A-Za-z]+\.aspx).*#\1 \2#; s#^https?://([^/?]+).*#\1#; s#^/_layouts/15/([A-Za-z]+\.aspx).*#\1#; s#^/.*#(même site)#' | paste -sd '>' - || true)
+          echo "_Empreinte du lien : ${empreinte} · réponse ${code:-000} · redirections : ${etapes:-aucune}_" > diag.txt
           # Seul le nom de domaine final est gardé (jamais le lien lui-même) pour expliquer un échec.
           hote=$(printf '%s' "${res#* }" | sed -E 's#^[a-z]+://([^/?]+).*#\1#')
           echo "code=${code:-000}" >> "$GITHUB_OUTPUT"
@@ -82,6 +88,7 @@ jobs:
           pip install --quiet --disable-pip-version-check openpyxl==3.1.5
           touch "$RUNNER_TEMP/catalogue.xlsx"
           python .github/scripts/verifier_catalogue.py "$RUNNER_TEMP/catalogue.xlsx" catalogue.xlsx "${{ steps.telechargement.outputs.code }}" "${{ steps.telechargement.outputs.hote }}"
+          { echo; cat diag.txt 2>/dev/null; } >> rapport.md
           cat rapport.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Publier la nouvelle version
