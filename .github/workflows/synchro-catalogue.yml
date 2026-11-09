@@ -5,7 +5,7 @@ name: Synchronisation du catalogue
 
 on:
   schedule:
-    - cron: '7,22,37,52 * * * *'   # toutes les 15 minutes
+    - cron: '7,22,37,52 * * * *'   # demandé toutes les 15 min ; GitHub l'exécute en pratique toutes les 4 à 7 h
   workflow_dispatch:                 # bouton « Run workflow » dans l'onglet Actions
     inputs:
       lien_test:

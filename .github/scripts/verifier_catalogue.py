@@ -184,7 +184,7 @@ def main():
     def bloquer(msg):
         lignes.extend(["### Synchronisation bloquée", "", f"**{msg}**", "",
                        "La version en ligne n'a pas changé. Corrigez le fichier sur SharePoint : "
-                       "le robot réessaie toutes les 15 minutes et ce ticket se ferme tout seul quand tout repart."])
+                       "le robot réessaie à chaque passage (plusieurs fois par jour, ou tout de suite avec Run workflow) et ce ticket se ferme tout seul quand tout repart."])
         sortie("bloque")
 
     if code != "200":

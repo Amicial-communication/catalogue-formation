@@ -12,7 +12,7 @@ Site : https://amicial-communication.github.io/catalogue-formation/
 ## Comment le catalogue se met à jour
 
 1. La référente formation modifie `catalogue.xlsx` **dans le dossier réservé de l'intranet** (accès communication et RH uniquement) (formations, sessions, champs d'inscription, réglages).
-2. Toutes les 15 minutes, le robot télécharge ce fichier, le contrôle et le publie s'il a changé. Le site est à jour dans la demi-heure.
+2. Plusieurs fois par jour (toutes les 4 à 7 heures environ, au rythme choisi par GitHub), le robot télécharge ce fichier, le contrôle et le publie s'il a changé. Besoin d'aller plus vite : voir « Publier tout de suite ».
 3. Une formation en cours de rédaction reste au statut **Brouillon** : elle n'apparaît pas tant qu'elle n'est pas « Publié ».
 
 **Si le fichier pose problème** (lien expiré, onglet renommé, fichier illisible, formations publiées divisées par deux d'un coup), le robot ne publie rien : le site garde la version précédente et un ticket « Synchronisation du catalogue bloquée » s'ouvre dans l'onglet *Issues* (avec notification par e-mail). Il se ferme tout seul quand tout repart. Les points non bloquants (ID en double, date illisible…) sont listés dans le détail de chaque passage, onglet *Actions*.
@@ -28,7 +28,7 @@ Le lien reste secret : il n'apparaît ni dans le code ni dans les journaux.
 
 ## Publier tout de suite
 
-Onglet **Actions → Synchronisation du catalogue → Run workflow**, ou attendre le prochain passage (toutes les 15 minutes).
+Onglet **Actions → Synchronisation du catalogue → Run workflow**, ou attendre le prochain passage (dans les heures qui suivent).
 
 **Facultatif, publication en une minute** : un flux Power Automate « Lorsqu'un fichier est créé ou modifié (propriétés uniquement) » sur le dossier SharePoint, suivi de l'action GitHub « Create a repository dispatch event » (dépôt `Amicial-communication/catalogue-formation`, type d'événement `catalogue-modifie`). Ces deux connecteurs sont standard, sans licence Premium.
 
