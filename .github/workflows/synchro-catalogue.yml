@@ -61,30 +61,31 @@ jobs:
         env:
           SHAREPOINT_URL: ${{ inputs.lien_test || secrets.SHAREPOINT_URL }}
         run: |
-          url="$SHAREPOINT_URL"
-          case "$url" in
-            *download=1*) ;;
-            *\?*) url="${url}&download=1" ;;
-            *)    url="${url}?download=1" ;;
-          esac
+          src="$(printf '%s' "$SHAREPOINT_URL" | tr -d '[:space:]')"
+          base="${src%%\?*}"
           ua="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
-          jar="$RUNNER_TEMP/cookies.txt"; : > "$jar"
-          # Les liens « Toute personne » de SharePoint posent un cookie d'invité pendant les redirections : on le garde.
-          res=$(curl -sSL -A "$ua" -c "$jar" -b "$jar" -D "$RUNNER_TEMP/entetes.txt" --retry 3 --retry-delay 10 --max-time 120 -o "$RUNNER_TEMP/catalogue.xlsx" -w '%{http_code} %{url_effective}' "$url" || true)
-          code=${res%% *}
+          jar="$RUNNER_TEMP/cookies.txt"
+          # Plusieurs formes de lien selon la version de SharePoint : on garde la première qui renvoie le fichier.
+          essai=0; code=000; res=""; tentatives=""
+          for url in "${base}?download=1" "$(case "$src" in *\?*) echo "${src}&download=1";; *) echo "${src}?download=1";; esac)" "$src"; do
+            essai=$((essai + 1)); : > "$jar"
+            res=$(curl -sSL -A "$ua" -c "$jar" -b "$jar" -D "$RUNNER_TEMP/entetes.txt" --retry 2 --retry-delay 5 --max-time 120 -o "$RUNNER_TEMP/catalogue.xlsx" -w '%{http_code} %{url_effective}' "$url" || true)
+            code=${res%% *}
+            if [ "$(head -c 2 "$RUNNER_TEMP/catalogue.xlsx" 2>/dev/null)" = "PK" ]; then tentatives="${tentatives} n°${essai} fichier reçu"; break; fi
+            tentatives="${tentatives} n°${essai} ${code:-000} page web,"
+          done
+          # Seul le nom de domaine final est gardé (jamais le lien lui-même) pour expliquer un échec.
+          hote=$(printf '%s' "${res#* }" | sed -E 's#^[a-z]+://([^/?]+).*#\1#')
+          echo "code=${code:-000}" >> "$GITHUB_OUTPUT"
+          echo "hote=${hote}" >> "$GITHUB_OUTPUT"
           # Diagnostic sans révéler le lien : empreinte courte du lien et étapes de redirection (domaine ou page SharePoint).
-          base="${SHAREPOINT_URL%%\?*}"; base="${base%"${base##*[![:space:]]}"}"
           empreinte=$(printf '%s' "$base" | sha256sum | cut -c1-8)
           titre=""
           if [ "$(head -c 2 "$RUNNER_TEMP/catalogue.xlsx" 2>/dev/null)" != "PK" ]; then
             titre=$(tr '\n\r' '  ' < "$RUNNER_TEMP/catalogue.xlsx" 2>/dev/null | grep -oi '<title[^>]*>[^<]*' | head -1 | sed -E 's/<title[^>]*>//I' | cut -c1-80 || true)
           fi
           etapes=$(grep -i '^location:' "$RUNNER_TEMP/entetes.txt" 2>/dev/null | tr -d '\r' | sed -E 's#^[Ll]ocation: *##; s#^https?://([^/?]+)/_layouts/15/([A-Za-z]+\.aspx).*#\1 \2#; s#^https?://([^/?]+).*#\1#; s#^/_layouts/15/([A-Za-z]+\.aspx).*#\1#; s#^/.*#(même site)#' | paste -sd '>' - || true)
-          echo "_Empreinte du lien : ${empreinte} · réponse ${code:-000} · redirections : ${etapes:-aucune}${titre:+ · page reçue : « ${titre} »}_" > diag.txt
-          # Seul le nom de domaine final est gardé (jamais le lien lui-même) pour expliquer un échec.
-          hote=$(printf '%s' "${res#* }" | sed -E 's#^[a-z]+://([^/?]+).*#\1#')
-          echo "code=${code:-000}" >> "$GITHUB_OUTPUT"
-          echo "hote=${hote}" >> "$GITHUB_OUTPUT"
+          echo "_Empreinte du lien : ${empreinte} · essais :${tentatives} · redirections du dernier : ${etapes:-aucune}${titre:+ · page reçue : « ${titre} »}_" > diag.txt
 
       - name: Contrôler le fichier
         id: controle
