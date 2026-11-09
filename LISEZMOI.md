@@ -11,7 +11,7 @@ Site : https://amicial-communication.github.io/catalogue-formation/
 
 ## Comment le catalogue se met à jour
 
-1. La référente formation modifie `catalogue.xlsx` **dans le dossier SharePoint RH** (formations, sessions, champs d'inscription, réglages).
+1. La référente formation modifie `catalogue.xlsx` **dans le dossier réservé de l'intranet** (accès communication et RH uniquement) (formations, sessions, champs d'inscription, réglages).
 2. Toutes les 15 minutes, le robot télécharge ce fichier, le contrôle et le publie s'il a changé. Le site est à jour dans la demi-heure.
 3. Une formation en cours de rédaction reste au statut **Brouillon** : elle n'apparaît pas tant qu'elle n'est pas « Publié ».
 
@@ -19,8 +19,8 @@ Site : https://amicial-communication.github.io/catalogue-formation/
 
 ## Réglage initial (une fois)
 
-1. Déposer la version actuelle de `catalogue.xlsx` dans le dossier SharePoint RH : c'est elle qui fait foi désormais.
-2. Sur ce fichier dans SharePoint : **Partager → ⚙ Paramètres du lien → « Toute personne disposant du lien »**, **décocher « Autoriser la modification »**, pas de date d'expiration → **Copier le lien**. Si cette option est grisée, la politique de partage du tenant l'interdit : voir avec le SI.
+1. Sur l'intranet, créer un dossier réservé (Gérer l'accès → ne plus hériter des autorisations ; accès « Modifier » pour la communication et la référente RH et son suppléant). Y déposer la version actuelle de `catalogue.xlsx` : c'est elle qui fait foi désormais. La bibliothèque de l'équipe RH ne convient pas : le partage « Toute personne » y est bloqué.
+2. Sur ce fichier dans SharePoint : **Partager → ⚙ Paramètres du lien → « Toute personne disposant du lien »**, **décocher « Autoriser la modification »**, pas de date d'expiration → **Copier le lien**. Le lien vise le fichier seul, pas le dossier.
 3. Dans ce dépôt : **Settings → Secrets and variables → Actions → New repository secret**. Nom : `SHAREPOINT_URL`, valeur : le lien copié → **Add secret**.
 4. Onglet **Actions → Synchronisation du catalogue → Run workflow**. Le passage doit finir en vert, avec « Catalogue publié » ou « Aucun changement » dans son résumé.
 
@@ -34,6 +34,8 @@ Onglet **Actions → Synchronisation du catalogue → Run workflow**, ou attendr
 
 ## Bon à savoir
 
+- Modifier le fichier sur place. Le renommer ou le déplacer dans le même site garde le lien ; le supprimer puis en déposer un nouveau, ou le déplacer vers un autre site, casse le lien (le robot prévient) : il faut alors recréer le lien et mettre à jour le secret `SHAREPOINT_URL`.
+
 - GitHub suspend les tâches programmées d'un dépôt public resté 60 jours sans activité. Le robot fait un « commit vide » tous les 45 jours sans changement pour l'éviter ; si jamais il est suspendu, GitHub prévient par e-mail et on le réactive en un clic dans l'onglet Actions.
 - Le dépôt est public : le fichier publié est téléchargeable. N'y mettez rien de confidentiel (colonne « Relecture » comprise).
-- Publication manuelle toujours possible : **Add file → Upload files** → `catalogue.xlsx` → **Commit**. Le robot la remplacera au passage suivant si le fichier SharePoint est différent : mettez donc aussi SharePoint à jour.
+- Publication manuelle toujours possible : **Add file → Upload files** → `catalogue.xlsx` → **Commit**. Le robot la remplacera au passage suivant si le fichier de l'intranet est différent : mettez donc aussi l'intranet à jour.
